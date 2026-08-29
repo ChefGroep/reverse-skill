@@ -110,6 +110,7 @@ python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --
 | **R26** | 代码审计 / SAST / Semgrep | `code-audit/` |
 | **R27** | 威胁狩猎 / 检测工程 / 蓝队 | `threat-hunting/` |
 | **R10** | 攻击链 / 红队 / 横向 / 完整渗透 | `attack-chain/` |
+| **R42** | Linux 提权 / SUID / GTFOBins / privesc | `linux-privesc/` |
 | **R11** | Nmap / Nuclei / SQLMap / SRC / 渗透工具 | `pentest-tools/` |
 | **R12** | API / GraphQL / BOLA / JWT 攻击 | `api-security/` |
 | **R13** | SBOM / Trivy / 供应链 | `supply-chain-security/` |
@@ -119,6 +120,8 @@ python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --
 | **R40** | Case / Evidence 图审查 | `case-review/` |
 | **R20** | 报告 / writeup | `docs-generator/` |
 | **R39** | 图表 / Mermaid / Graphviz / PlantUML / 架构图 | `diagram-generator/` |
+| **R43** | 隐写 / stego / zsteg / steghide | `stego-analysis/` |
+| **R45** | CTF crypto / RSA / XOR / padding oracle | `crypto-puzzle/` |
 | **R41** | CTF / AWD / 靶场（单入口，不展开 40 个子技能） | `ctf-sandbox/` |
 | **R0** | 通用逆向 / 反调试 / OLLVM / 未知二进制 | `reverse-engineering/` |
 

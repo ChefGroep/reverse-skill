@@ -870,6 +870,101 @@
       "hint": "Twitter marketing sentiment for our product",
       "expect": "R0",
       "quick": false
+    },
+    {
+      "hint": "sql injectie vinden in webapplicatie",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "wachtwoorden kraken",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "poort scan uitvoeren",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "kwetsbaarheden scannen",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "penetratietest webapplicatie",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "aanvalsketen van buiten naar domeincontroller",
+      "expect": "R10",
+      "quick": false
+    },
+    {
+      "hint": "forensisch onderzoek na inbraak",
+      "expect": "R25",
+      "quick": false
+    },
+    {
+      "hint": "javascript reverse engineeren",
+      "expect": "R3",
+      "quick": false
+    },
+    {
+      "hint": "DNS tunneling detectie",
+      "expect": "R21",
+      "quick": false
+    },
+    {
+      "hint": "verkeersanalyse exfiltratie",
+      "expect": "R21",
+      "quick": false
+    },
+    {
+      "hint": "linux privilege escalation suid",
+      "expect": "R42",
+      "quick": false
+    },
+    {
+      "hint": "sudo -l gtfobins enum",
+      "expect": "R42",
+      "quick": false
+    },
+    {
+      "hint": "linux privesc docker group escape",
+      "expect": "R42",
+      "quick": false
+    },
+    {
+      "hint": "windows privilege escalation",
+      "expect": "R11",
+      "quick": false
+    },
+    {
+      "hint": "steganografie in png vinden",
+      "expect": "R43",
+      "quick": false
+    },
+    {
+      "hint": "zsteg steghide ctf image",
+      "expect": "R43",
+      "quick": false
+    },
+    {
+      "hint": "ctf crypto rsa small exponent",
+      "expect": "R45",
+      "quick": false
+    },
+    {
+      "hint": "padding oracle attack cbc",
+      "expect": "R45",
+      "quick": false
+    },
+    {
+      "hint": "hash length extension secret",
+      "expect": "R45",
+      "quick": false
     }
   ]
 }
