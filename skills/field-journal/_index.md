@@ -6,10 +6,10 @@
 
 ## Statistics
 
-- Real projects: 20
+- Real projects: 21
 - Seed references: 17
-- Total entries: 37
-- Last updated: 2026-08-20
+- Total entries: 38
+- Last updated: 2026-08-30
 
 ## By Scenario
 
@@ -62,6 +62,7 @@
 
 ### Toolchain and Environment
 
+- [2026-08-30 CI index regeneration and masked exit-code recovery](./2026-08-30_ci-index-regen-and-masked-exit-codes.md)
 - [2026-08-17 tool-index r2 fallback and unified powershell/pwsh subprocess entry](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
 - [2026-08-14 Windows PowerShell native command exit-code PR review](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
 - [2026-08-08 Platform-neutral structured routing PR integration](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
@@ -78,6 +79,7 @@
 
 - [Resolve-ReverseHostExe unified subprocess entry, r2 .bat fallback, StrictMode-safe hashtable access](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
 - [Save the exit code immediately after native commands, Windows PowerShell 5.1 real-host reproduction, pinned PR head](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
+- [Run the real generator under runner-equivalent culture, verify with its own -Check mode, capture exit codes without pipe masking](./2026-08-30_ci-index-regen-and-masked-exit-codes.md)
 - [Single routing.json, multi-entry parity, pinned actual install commands](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 
 ### Firmware Custom Packaging
