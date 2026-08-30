@@ -1,0 +1,29 @@
+# own-infra ownership allowlist (operator-maintained)
+#
+# The own-infra preset grants testing authorization ONLY for hosts listed here.
+# One entry per line; '#' starts a comment. Domain entries match the domain
+# itself and every subdomain. IPv4 ranges use the cidr: prefix. IPv6 is not
+# matched (stays pending).
+#
+# Rules of thumb:
+#   - List only infrastructure your organization OWNS or OPERATES end-to-end
+#     (your own VMs, your lab ranges, your registered domains).
+#   - NEVER list vendor/SaaS control planes (cloud dashboards, PSP endpoints,
+#     email/marketing platforms, shared hosting panels, code hosting). They
+#     remain third parties even when they host your workloads.
+#   - NEVER list third-party production systems of customers or partners.
+#   - Anything not covered here stays auth.status=pending and needs explicit
+#     owner authorization via --auth-granted --evidence-of-auth.
+
+# ChefGroep-owned domains (add domains you own here; subdomains included)
+chefgroep.online
+chefgroep.nl
+
+# ChefGroep Tailscale tailnet
+tail86a8f2.ts.net
+
+# Lab / private ranges
+cidr:10.0.0.0/8
+cidr:172.16.0.0/12
+cidr:192.168.0.0/16
+cidr:100.64.0.0/10

@@ -47,4 +47,43 @@ if bash "$SCRIPT_DIR/case-guard.sh" --case-root "$SCRATCH/work/test-bash-01" > /
     exit 1
 fi
 
+# Test 5: own-infra preset grants allowlisted hosts (domain + CIDR)
+echo "[Test 5] case-init own-infra preset grants allowlisted host"
+bash "$SCRIPT_DIR/case-init.sh" \
+  --hint "own infra check" \
+  --case-name "test-bash-05" \
+  --package-root "$SCRATCH" \
+  --preset own-infra \
+  --targets "deepseek.chefgroep.online,10.0.0.5" > "$SCRATCH/own-infra-grant.log"
+if ! grep -q "auth.status=granted" "$SCRATCH/own-infra-grant.log"; then
+    echo "FAIL: own-infra preset did not grant allowlisted host"
+    exit 1
+fi
+if ! bash "$SCRIPT_DIR/case-guard.sh" --case-root "$SCRATCH/work/test-bash-05" > /dev/null; then
+    echo "FAIL: case-guard rejected own-infra granted scope"
+    exit 1
+fi
+
+# Test 6: own-infra preset stays pending for a host outside the allowlist
+echo "[Test 6] case-init own-infra preset stays pending for non-owned host"
+bash "$SCRIPT_DIR/case-init.sh" \
+  --hint "third party probe" \
+  --case-name "test-bash-06" \
+  --package-root "$SCRATCH" \
+  --preset own-infra \
+  --targets "example.com" > "$SCRATCH/own-infra-deny.log"
+if ! grep -q "auth.status=pending" "$SCRATCH/own-infra-deny.log"; then
+    echo "FAIL: own-infra preset granted a host outside own-infra.allowlist"
+    exit 1
+fi
+
+# Test 7: case-guard re-verifies own-infra scope (hand-edited foreign asset)
+echo "[Test 7] case-guard rejects foreign asset in own-infra scope"
+sed -i 's|https://example.com|https://foreign.invalid|g' "$SCRATCH/work/test-bash-06/scope.md"
+sed -i 's/status: pending/status: granted/' "$SCRATCH/work/test-bash-06/scope.md"
+if bash "$SCRIPT_DIR/case-guard.sh" --case-root "$SCRATCH/work/test-bash-06" > /dev/null 2>&1; then
+    echo "FAIL: case-guard accepted foreign asset under own-infra preset"
+    exit 1
+fi
+
 echo "=== All Bash Workflow Tests Passed ==="

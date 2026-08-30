@@ -4,6 +4,7 @@
 #   bash skills/scripts/case-init.sh --hint "apk reverse" --case-name demo
 #   bash skills/scripts/case-init.sh --hint "local sample" --preset offline-sample --sample ./app.apk
 #   bash skills/scripts/case-init.sh --hint "ctf web" --preset ctf-public --target-url https://chal.example
+#   bash skills/scripts/case-init.sh --hint "own infra" --preset own-infra --targets "app.internal,10.0.0.5"
 set -euo pipefail
 
 HINT=""
@@ -19,6 +20,7 @@ TARGET_URL=""
 NETWORK_PROFILE=""
 SAMPLE=""
 PRESET=""
+OWN_INFRA=0
 IN_SCOPE_ASSETS=()
 
 while [[ $# -gt 0 ]]; do
@@ -36,6 +38,20 @@ while [[ $# -gt 0 ]]; do
     -Sample|--sample|--offline-sample) SAMPLE="${2:-}"; shift 2 ;;
     -Preset|--preset) PRESET="${2:-}"; shift 2 ;;
     -InScopeAssets|--in-scope-asset) IN_SCOPE_ASSETS+=("${2:-}"); shift 2 ;;
+    -Targets|--targets)
+      IFS=',' read -r -a OWN_TARGETS <<< "${2:-}"
+      for _t in "${OWN_TARGETS[@]:-}"; do
+        _t="$(printf '%s' "$_t" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+        if [[ -n "$_t" ]]; then IN_SCOPE_ASSETS+=("$_t"); fi
+      done
+      shift 2 ;;
+    -ListPresets|--list-presets)
+      echo "presets:"
+      echo "  offline-sample|own-sample|local-sample : local files you own (offline)"
+      echo "  ctf-public|ctf                         : public CTF challenge endpoints"
+      echo "  own-system|lab-only                    : your own machines / lab ranges (lab_only)"
+      echo "  own-infra|chef-infra                   : operator-owned infra, verified against skills/config/own-infra.allowlist"
+      exit 0 ;;
     -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
     *)
       if [[ -z "$HINT" && "$1" != -* ]]; then HINT="$1"; shift
@@ -91,8 +107,18 @@ case "$PRESET" in
     NETWORK_PROFILE="${NETWORK_PROFILE:-lab_only}"
     EVIDENCE_OF_AUTH="${EVIDENCE_OF_AUTH:-preset:own-system/lab}"
     ;;
+  own-infra|chef-infra)
+    # Operator-owned infrastructure. Provisional grant: kept only when EVERY
+    # network asset matches skills/config/own-infra.allowlist (validated after
+    # asset collection below). Never grants vendor/SaaS or third-party hosts.
+    OWN_INFRA=1
+    AUTH_GRANTED=1
+    AUTH_BASIS="own_infra"
+    NETWORK_PROFILE="${NETWORK_PROFILE:-authorized_target_only}"
+    EVIDENCE_OF_AUTH="${EVIDENCE_OF_AUTH:-preset:own-infra (operator-owned, allowlist-verified)}"
+    ;;
   *)
-    echo "WARN: unknown preset '$PRESET' (allowed: offline-sample|ctf-public|own-system)" >&2
+    echo "WARN: unknown preset '$PRESET' (allowed: offline-sample|ctf-public|own-system|own-infra)" >&2
     ;;
 esac
 
@@ -155,6 +181,34 @@ for a in "${IN_SCOPE_ASSETS[@]:-}"; do
 done
 if [[ ${#ASSETS[@]} -eq 0 && "$HINT" =~ https?://([^[:space:]/]+) ]]; then
   ASSETS+=("https://${BASH_REMATCH[1]}/")
+fi
+
+# own-infra preset validation: revoke the provisional grant when any asset is
+# not covered by the ownership allowlist (parity with case-init.ps1).
+if [[ $OWN_INFRA -eq 1 ]]; then
+  ALLOWLIST="$SKILLS_ROOT/config/own-infra.allowlist"
+  # shellcheck source=skills/scripts/lib/own-infra-match.sh
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR/lib/own-infra-match.sh"
+  if [[ ! -f "$ALLOWLIST" ]]; then
+    auth_status_resolved="pending"
+    evidence_auth="preset:own-infra REFUSED: allowlist missing: $ALLOWLIST"
+    echo "WARN: own-infra preset refused - allowlist missing: $ALLOWLIST" >&2
+  else
+    NOT_OWNED=()
+    for _a in "${ASSETS[@]:-}"; do
+      [[ -n "$_a" ]] || continue
+      if ! own_infra_host_allowed "$ALLOWLIST" "$_a"; then
+        NOT_OWNED+=("$_a")
+      fi
+    done
+    if [[ ${#NOT_OWNED[@]} -gt 0 ]]; then
+      auth_status_resolved="pending"
+      evidence_auth="preset:own-infra REFUSED for asset(s) outside own-infra.allowlist: ${NOT_OWNED[*]}"
+      echo "WARN: own-infra preset kept auth pending - outside own-infra.allowlist: ${NOT_OWNED[*]}" >&2
+      echo "      own-infra covers only hosts you own (skills/config/own-infra.allowlist); for anything else pass explicit --auth-granted --evidence-of-auth with the owner's written permission" >&2
+    fi
+  fi
 fi
 
 if [[ -n "$NETWORK_PROFILE" ]]; then
@@ -263,7 +317,7 @@ $assets_block
 - notes: |
     offline | lab_only | authorized_target_only | unrestricted_lab
     Change mode only after auth.status = granted.
-    Presets: offline-sample | ctf-public | own-system
+    Presets: offline-sample | ctf-public | own-system | own-infra
 
 ## deliverables
 - report: true
@@ -361,5 +415,5 @@ if [[ "$ready" == true ]]; then
   echo "NEXT: open PRIMARY SKILL.md and ACT within scope"
 else
   echo "NEXT: fill scope.md auth + in_scope; then open PRIMARY SKILL.md"
-  echo "HINT: try --preset offline-sample|--preset ctf-public|--preset own-system"
+  echo "HINT: try --preset offline-sample|--preset ctf-public|--preset own-system|--preset own-infra"
 fi

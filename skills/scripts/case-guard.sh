@@ -105,6 +105,40 @@ if [[ $has_asset -eq 0 && "$net_mode" != "offline" ]]; then
   ISSUES+=("in_scope.assets appears empty")
 fi
 
+# own-infra defense-in-depth: a scope claiming the own-infra preset (or the
+# own_infra auth basis) must list ONLY assets covered by the ownership
+# allowlist. Hand-edited scopes are re-verified here.
+oi_preset="$(section_field meta preset | tr '[:upper:]' '[:lower:]')"
+oi_basis="$(section_field auth basis | tr '[:upper:]' '[:lower:]')"
+own_infra_scope=0
+case "$oi_preset" in own-infra|chef-infra) own_infra_scope=1 ;; esac
+case "$oi_basis" in own_infra) own_infra_scope=1 ;; esac
+if [[ $own_infra_scope -eq 1 ]]; then
+  SCRIPT_DIR_GUARD="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  ALLOWLIST="$SCRIPT_DIR_GUARD/../config/own-infra.allowlist"
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR_GUARD/lib/own-infra-match.sh"
+  if [[ ! -f "$ALLOWLIST" ]]; then
+    ISSUES+=("own-infra scope: allowlist missing: $ALLOWLIST")
+  else
+    while IFS= read -r oi_asset; do
+      if [[ -z "$oi_asset" ]]; then continue; fi
+      if ! own_infra_host_allowed "$ALLOWLIST" "$oi_asset"; then
+        ISSUES+=("own-infra scope: asset not in own-infra.allowlist: $oi_asset")
+      fi
+    done < <(printf '%s\n' "$SCOPE" | awk '
+      BEGIN{inscope=0; inassets=0}
+      /^##[[:space:]]*in_scope/ {inscope=1; inassets=0; next}
+      /^##[[:space:]]/ {if(inscope){inscope=0; inassets=0}}
+      inscope && /-[[:space:]]*assets:/ {inassets=1; next}
+      inscope && inassets && /^[[:space:]]+-[[:space:]]+/ {
+        line=$0
+        sub(/^[[:space:]]+-[[:space:]]+/, "", line)
+        if (line !~ /^\[\]/ && length(line)>0) print line
+      }')
+  fi
+fi
+
 ready=0
 if [[ "$(section_field signoff ready_for_act | tr '[:upper:]' '[:lower:]')" == "true" ]]; then
   ready=1
