@@ -31,25 +31,25 @@ implementation-notes.md
 issues.json
 issues-index.txt
 
-# 测试案例（本地）
-测试案例/
-测试案例.zip
+# Test cases (local)
+test-cases/
+test-cases.zip
 
-# 工具索引（每台机器不同）
+# Tool index (differs per machine)
 skills/tool-index.md
 skills/tool-index.json
 
-# 本机就绪报告（含用户路径 / 客户端配置，不入库）
+# Local readiness report (includes user paths / client config, not committed)
 LOCAL-READINESS.md
 
-# 编译产物
+# Reports (prevent unmasking leaks)
 *.exe
 *.dll
 *.so
 *.dylib
 work/
 
-# 签名密钥（首次运行自动生成）
+# Signing keys (auto-generated on first run)
 skills/apk-reverse/debug.keystore
 *.keystore
 
@@ -63,13 +63,13 @@ burp-mcp-full/.gradle/
 !burp-mcp-full/build/libs/burp-mcp-full.jar
 !burp-mcp-full/gradle/wrapper/gradle-wrapper.jar
 
-# 已弃用
+# Deprecated
 BOOTSTRAP.md
 
-# 报告（防未脱敏泄漏）
+# Reports (prevent unmasking leaks)
 reports/
 
-# 运行产物 / 实验垃圾
+# Run artifacts / experiment junk
 master-route-*/
 **/master-route-*/
 mcps/

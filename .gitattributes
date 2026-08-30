@@ -1,4 +1,4 @@
-# 行尾规范：sh 脚本强制 LF（Linux/macOS/Kali 可执行）
+# Line-ending policy: sh scripts forced to LF (Linux/macOS/Kali executable)
 *.sh text eol=lf
 *.ps1 text eol=crlf
 *.bat text eol=crlf
@@ -11,7 +11,7 @@
 *.yaml text eol=lf
 *.toml text eol=lf
 
-# 二进制
+# Binary
 *.jar binary
 *.zip binary
 *.png binary
