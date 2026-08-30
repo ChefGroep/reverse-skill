@@ -9,7 +9,7 @@ Volledig geüpgraded: 2026-08-29 (tuning-rondes: NL-routing, 3 nieuwe skills, vo
 - **Versie**: v1.0.1 (VERSION file), sync met origin/main
 - **Lokale branch**: `chefgroep-tuning` (upstream-wijzigingen blijven merge-baar)
 - **46 skills** met SKILL.md frontmatter (43 upstream + 3 ChefGroep-eigen)
-- **Routing**: 46 regels in `skills/config/routing.json`, **192 benchmark cases, 192/192 PASS**
+- **Routing**: 46 regels in `skills/config/routing.json`, **228 benchmark cases, 228/228 PASS**
 - **Regression suites**: test-routing.sh, test-bootstrap-manifest.sh, test-bash-workflow.sh,
   test-client-neutral-bootstrap.sh — allemaal groen
 
@@ -139,5 +139,5 @@ ACT verboden; `case-guard --force` omzeilt deze gate niet.
 1. Route-wijziging: alleen `skills/config/routing.json` + benchmark-case in
    `skills/tests/routing-benchmark.json` + prioriteitsrij in
    `skills/MASTER-ROUTING.md` (die drie blijven 1:1 in sync).
-2. Daarna: `bash skills/scripts/test-routing.sh` moet 192/192 blijven.
+2. Daarna: `bash skills/scripts/test-routing.sh` moet 228/228 blijven.
 3. Commit op `chefgroep-tuning`; upstream-sync via merge met origin/main.
