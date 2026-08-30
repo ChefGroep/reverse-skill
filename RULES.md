@@ -98,6 +98,23 @@ Hot path only:
 
 `skills/routing.md` is an advisory 3-axis view **after** PRIMARY, not a second router.
 
+### Authorization presets — when the gate opens
+
+| preset | auth basis | network profile | valid use |
+|---|---|---|---|
+| `offline-sample` / `own-sample` / `local-sample` | own_system | offline | local files you own |
+| `ctf-public` / `ctf` | ctf_public | authorized_target_only | public CTF challenge endpoints |
+| `own-system` / `lab-only` | own_system | lab_only | your own machines / lab ranges |
+| `own-infra` / `chef-infra` | own_infra | authorized_target_only | operator-owned infrastructure verified against `skills/config/own-infra.allowlist` |
+
+Hard rules:
+
+- Mentioning a target is NOT authorization. `--force` / `-Force` never bypasses the gate.
+- `own-infra` grants ONLY assets that match the ownership allowlist; any other host stays `auth.status=pending`. The gate re-verifies every asset at `case-guard` time (hand-edited scopes included).
+- Vendor/SaaS control planes (cloud dashboards, PSP endpoints, email/marketing platforms, shared hosting panels, code hosting) are NEVER own-infra — they remain third parties even when they host your workloads.
+- Third-party production systems of customers or partners are NEVER own-infra, and no preset makes them in-scope.
+- No preset matches → collect explicit authorization from the asset owner, then pass `--auth-granted --evidence-of-auth "<who, when, where>"`.
+
 ---
 
 ## Execution Principles
