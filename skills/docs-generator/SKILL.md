@@ -69,7 +69,7 @@ Takes effect **simultaneously** with §0 Evidence→Finding→Path; on conflict,
 - Reproduction steps must let a third party reproduce independently
 - Sensitive information (real tokens, passwords, internal URLs) replaced with placeholders
 - **MUST** include the Evidence → Finding → Path chain (see `../ops/evidence-finding-path.md` and template §0)
-- **MUST** read `references/vendor-report-rules.md`: choose `malware` / `apt` or `flavor = null` (vulnerability tasks may stack thin `vuln`); with no flavor, output only the original task template and applicable Base elements, without forcing IOC/ATT&CK
+- **MUST** read `references/vendor-report-rules.md`: choose `malware` / `apt` or `flavor = null` (vulnerability tasks may stack thin `vuln`); with no flavor, output only the original task template and applicable Base elements, no forced IOC/ATT&CK
 - **SHOULD** reference the case `scope.md` / `timeline.md` (`../scripts/case-init.ps1`)
 
 ### Diagram integration

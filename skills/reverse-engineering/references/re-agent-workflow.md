@@ -1,7 +1,7 @@
 # RE Agent Workflow Gate (static↔dynamic)
 
 > Inspired by: binary-re stage division, community RE skills (Frida/r2/Ghidra/IDA loops), Cerberus triple-head ring (static/dynamic/instrumentation)
-> Issue #65 increment: IAT repair iron rule, six-phase mapping, .NET/DLL·SYS equivalent paths; user-instruction feasibility gate; bypass patches 6-10; anti-debug/deobfuscation recipes A-T; non-PE multi-format recipes U-AV (2026-08-12)
+> Issue #65 increment: IAT repair iron law, six-phase mapping, .NET/DLL·SYS equivalent paths; user-instruction feasibility gate; bypass patches 6-10; anti-debug/deobfuscation recipes A–T; non-PE multi-format recipes U–AV (2026-08-12)
 > Applies to: `reverse-engineering/`, `ida-reverse/`, `radare2/`, `malware-analysis/`, and handoff to the cre role
 
 ## 0. Launch
@@ -18,7 +18,7 @@ Do not re-inject the full case context between phases. `scope.md` / `workitems.m
 
 1. At the end of each stage/turn, write only the `decision_delta` that actually changes downstream action; write `[]` when nothing changed.
 2. Unchanged route/auth/scope/network profile/tool state/hypothesis go only into `carry_forward_refs`; the consumer reads them via references instead of re-serializing/emitting.
-3. `decision_delta` is not a full state; the consumer must first inherit the references, then apply the delta.
+3. `decision_delta` is not a full state; the consumer must inherit refs first, then apply the delta.
 4. Stop at a next-step menu only when two or more evidence-supported branches lead to different downstream actions; a deterministic gate advances directly.
 
 Example: when Triage is complete and the only legitimate next step is Static, the transition only needs `decision_delta: [phase=triage->static]` + `carry_forward_refs: [scope.md, evidence/E-triage.md]`.
@@ -43,7 +43,7 @@ Typical conflict: the user says on a packed sample "don't unpack first, look at 
 ```text
 □ Compute the sample hash (MD5/SHA256) -> unique ID
 □ Identify the file type: EXE / DLL / SYS / ELF / Mach-O / .NET / script (bat/ps1/vba) / JS / APK etc.
-□ Non-PE/script/APK/driver specialization: see §3.4 and `references/nonpe-format-cookbook.md` (U-AV)
+□ Non-PE/script/APK/driver specialization: see §3.4 and `references/nonpe-format-cookbook.md` (U–AV)
 □ file / DiE / entropy / packer signatures (PEiD / DiE / Exeinfo etc.)
 □ Architecture: x86 / x64 / ARM; compiled-language leads (VC++ / Delphi / .NET / Go / Rust)
 □ Packer-type leads: UPX / ASPack / VMProtect / Themida / unknown obfuscation
@@ -84,7 +84,7 @@ Branch B: packed / heavy obfuscation
     Tools: x86 -> ImportREC (or equivalent); x64 -> Scylla (or equivalent). Never grind a 64-bit sample with ImportREC.
     Situation B1: repair succeeds and parses -> record E-imports (post-repair) -> §2 Static
     Situation B2: ImportREC/Scylla reports errors, the repaired binary fails to run, or the IAT is fully garbled (VMP/encrypted packers)
-      -> [IAT repair iron rule] Immediately terminate further static IAT repair
+      -> [IAT repair iron law] Immediately terminate further static IAT repair
       -> MUST record E-iat-repair-fail (commands, tools, failure phenomena, decision to go dynamic)
       -> Enter §3 Dynamic directly: API breakpoints / hardware breakpoints / memory search to capture imports
       -> This is not "skipping the import table": the import-table path was attempted and recorded as Evidence
@@ -93,7 +93,7 @@ Branch B: packed / heavy obfuscation
       -> Transition to §3 Dynamic: break on CreateFile / GetFileSize / hash-related APIs to locate the self-check bypass point
 ```
 
-**IAT repair iron rule (MUST)**: prefer automatic/semi-automatic repair; as soon as the repair tool reports an error or the repaired binary fails to run, **stop immediately** grinding the static import table, switch to dynamic debugging, and use API breakpoints (e.g., `bp CreateFile` / key network APIs) to capture imported functions at runtime.
+**IAT repair iron law (MUST)**: prefer automatic/semi-automatic repair; as soon as the repair tool reports an error or the repaired binary fails to run, **stop immediately** grinding the static import table, switch to dynamic debugging, and use API breakpoints (e.g., `bp CreateFile` / key network APIs) to capture imported functions at runtime.
 
 ## 2. Static (base static anchors → deep dive)
 
@@ -111,7 +111,7 @@ Branch B: packed / heavy obfuscation
 □ Hardcoded domain/IP/URL strings; whether the resource section hides payloads
 □ Locate key functions (crypto/self-check/network/license) -> write addresses/symbols into Evidence
 □ One path dead ends -> switch tools (IDA↔r2↔Ghidra)
-□ Time-box (patch 9 · SHOULD default): after ~15 minutes of static deep dive with no key path -> mandate transition to §3 Dynamic (user/task may override the duration)
+□ Timebox (patch 9 · SHOULD default): after ~15 minutes of static deep dive with no key path -> mandate transition to §3 Dynamic (user/task may override the duration)
 ```
 
 **Without MCP**: export decompiled text and analyze it (the P4nda0s reverse-skills / IDA-NO-MCP approach), still writing the Evidence path.
@@ -137,7 +137,7 @@ Before launching the sample in a user-mode debugger (x64dbg etc.), preset breakp
 □ Anti-debug / anti-Frida -> reverse-engineering/anti-analysis
 □ Android: generate root-detection / SSL-pinning bypass scripts on demand, **on an authorized device**
 □ Crash logs drive the next round of hooking (adaptive loop)
-□ Time-box (patch 9 · SHOULD default): after single-stepping ~200 instructions with no malicious-behavior leads -> mandate back to static string search / anchor switch (may override)
+□ Timebox (patch 9 · SHOULD default): after single-stepping ~200 instructions with no malicious-behavior leads -> mandate back to static string search / anchor switch (may override)
 ```
 
 ### 3.1 Sandbox / dynamic no-behavior emergency branch (MUST)
@@ -149,7 +149,7 @@ No behavior or instant exit / infinite sleep
   -> Write "no behavior + suspected anti-VM" into Evidence; never write "sample is benign" without conditions
 ```
 
-### 3.2 Time-box strategy (patch 9 · SHOULD)
+### 3.2 Timebox strategy (patch 9 · SHOULD)
 
 | Phase | Default threshold (user/task may override) | Action |
 |------|------------------------------|------|
@@ -157,9 +157,9 @@ No behavior or instant exit / infinite sleep
 | Dynamic single-step with no progress | ~200 instructions | Back to Static strings/cross-references to re-anchor |
 | Any path repeatedly failing | Record Evidence, then switch tool or bypass | Never idle on the same failing method |
 
-### 3.3 Anti-debug / deobfuscation bypass cheat sheet (Issue #65 patches A-T · high-frequency)
+### 3.3 Anti-debug / deobfuscation bypass cheat sheet (Issue #65 patches A–T · high-frequency)
 
-Full index and action details: `reverse-engineering/anti-analysis.md` "Agent Response Recipes A-T". Here only **P0 must-checks + common transitions**. Default: **authorized isolated lab**; patching/changing flag bits is not an unauthorized production action.
+Full index and action details: `reverse-engineering/anti-analysis.md` "Agent Response Recipes A–T". Here only **P0 must-checks + common transitions**. Default: **authorized isolated lab**; patching/changing flag bits is not an unauthorized production action.
 
 | Trigger signature | First action (summary) | Evidence |
 |----------|------------------|----------|
@@ -182,9 +182,9 @@ Full index and action details: `reverse-engineering/anti-analysis.md` "Agent Res
 | Always-true/always-false branches (S) | **See** ollvm / symbolic execution; dynamic verdicts win | `E-opaque-pred` |
 | `/proc/self/status` TracerPid (L) | **Linux/ELF**; hook or patch; not mandated on the Windows main path | `E-anti-debug-tracerpid` |
 
-**Constraints**: bypass failures also record Evidence; never write "anti-debug triggered exit" as "sample is benign". Full A-T and P2 (E compile-time, O garbage instruction) live in the anti-analysis recipe section.
+**Constraints**: bypass failures also record Evidence; never write "anti-debug triggered exit" as "sample is benign". Full A–T and P2 (E compile-time, O garbage instruction) live in the anti-analysis recipe section.
 
-### 3.4 Non-PE / multi-format bypass (Issue #65 patches U-AV · routing)
+### 3.4 Non-PE / multi-format bypass (Issue #65 patches U–AV · routing)
 
 Full index: `reverse-engineering/references/nonpe-format-cookbook.md`. Here only **type → entry**; action details live in the cookbook / corresponding skill.
 
@@ -195,17 +195,17 @@ Full index: `reverse-engineering/references/nonpe-format-cookbook.md`. Here only
 | VBA macros | cookbook §3 + malware | `E-vba-pcode` |
 | JS heavy obfuscation / JSVMP | **js-reverse** + cookbook §4 | `E-js-vmp` / `E-js-deobf` |
 | SYS driver | kernel-driver-reverse + cookbook §5 | `E-driver-irp-handlers` / `E-driver-ioctl` |
-| DLL specifics | cookbook §6 (AM≡A-T **R**) | `E-dll-tls-dllmain` / `E-exports` |
+| DLL specifics | cookbook §6 (AM≡A–T **R**) | `E-dll-tls-dllmain` / `E-exports` |
 | Android device-wiper / hidden icons | **apk-reverse** + cookbook §7-8 | `E-android-wiper-*` / `E-android-hidden-icon-*` |
 
-**Constraints**: do not start a parallel "non-PE six-phase"; division of labor with §3.3 A-T (PE anti-debug vs multi-format). Authorized lab; device-wipers/BYOVD/reflective = detection and forensics language.
+**Constraints**: do not start a parallel "non-PE six-phase"; division of labor with §3.3 A–T (PE anti-debug vs multi-format). Authorized lab; device-wipers/BYOVD/reflective = detection and forensics language.
 
 
 ## 4. Synthesis (IOCs / attack chain / report)
 
 ### Decision quality overlay (Issue #77)
 
-Before closing Synthesis, apply [analysis-decision-framework.md](../../ops/analysis-decision-framework.md) **P0 checklist**: R41 grounded claims, R4* validated sufficiency, R1 confidence->dynamic, R2 hypothesis exit, R43 deadlock replan (under feasibility gate), R8/R23 no default malice/IOC. Multi-module -> R50; anti-analysis effort -> R51 + A-T cookbook.
+Before closing Synthesis, apply [analysis-decision-framework.md](../../ops/analysis-decision-framework.md) **P0 checklist**: R41 grounded claims, R4* validated sufficiency, R1 confidence->dynamic, R2 hypothesis exit, R43 deadlock replan (under feasibility gate), R8/R23 no default malice/IOC. Multi-module -> R50; anti-analysis effort -> R51 + A–T cookbook.
 
 Blindspots (Rust/Go/VMP/injection/OLE/PDF/agent-meta): [analysis-blindspot-cookbook.md](../../ops/analysis-blindspot-cookbook.md) R52-R81 — detection-oriented; not a parallel master flow.
 
@@ -220,12 +220,12 @@ Blindspots (Rust/Go/VMP/injection/OLE/PDF/agent-meta): [analysis-blindspot-cookb
 
 ## 5. Six-Phase Practical Mapping (Issue #65 mind-map → this file)
 
-| Practical phase | This file's section | Hard gate / iron rule |
+| Practical phase | This file's section | Hard gate / iron law |
 |----------|------------|-------------|
 | 1 Initial fast assessment | §0-§1 Triage | Hash, architecture, file type, packer check; imports/equivalent anchors; §0.5 instruction gate |
-| 2 Unpacking and IAT | §1.2 | IAT iron rule; failure / self-check crash -> Evidence -> Dynamic |
+| 2 Unpacking and IAT | §1.2 | IAT iron law; failure / self-check crash -> Evidence -> Dynamic |
 | 3 Base static anchors | §2 Static | High-risk API combinations; time-box SHOULD |
-| 4 Deep cross-verification | §3 Dynamic | Four-stage rocket breakpoints; no-behavior emergency; time-box; §3.3 A-T; §3.4 U-AV type routing |
+| 4 Deep cross-verification | §3 Dynamic | Four-stage rocket breakpoints; no-behavior emergency; time-box; §3.3 A–T; §3.4 U–AV type routing |
 | 5 IOC and attack-chain extraction | §4 Synthesis | IOC + Kill Chain / Path |
 | 6 Archiving and rule artifacts | §4 + docs-generator / YARA | Structured report; rules optional |
 

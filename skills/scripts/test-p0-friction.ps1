@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # In-repo test: drives real smoke / case-init / append-evidence entrypoints.
 # Usage:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-p0-friction.ps1

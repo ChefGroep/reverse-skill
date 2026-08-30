@@ -779,7 +779,7 @@ Many CTF challenges stack multiple checks:
 
 ---
 
-## Agent Response Recipes A-T (Issue #65)
+## Agent response recipe A–T (Issue #65)
 
 > Long detection references remain in `malware-analysis/references/anti-analysis-techniques.md`; the long OLLVM flow is in `references/ollvm-deobfuscation.md`.
 > This section is a short **trigger -> action -> Evidence** recipe table for agent use in Dynamic/Static bypasses.
@@ -793,7 +793,7 @@ Many CTF challenges stack multiple checks:
 4. L is mandated only for Linux/ELF; the Windows PE main path is not judged failed for lacking TracerPid.
 5. E's VT (VirusTotal) cross-reference is **optional**; without an external intel source, write n/a — never fabricate a first-seen timestamp.
 
-### Full Table A-T
+### Full Table A–T
 
 | ID | Trigger | Action | Evidence | Priority |
 |----|------|----------|----------|--------|

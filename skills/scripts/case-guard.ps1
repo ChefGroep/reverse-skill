@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 # Lightweight scope gate before ACT. Exit 0 = ok, 2 = not ready, 1 = usage/error.
 # Usage:
 #   powershell -File skills/scripts/case-guard.ps1 -CaseRoot work\my-case

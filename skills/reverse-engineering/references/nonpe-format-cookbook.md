@@ -1,11 +1,11 @@
-# Non-PE / Multi-Format Agent Response Recipes U-AV + AW-DN
+# Non-PE / Multi-Format Agent Response Recipes U–AV + AW-DN
 
 > Parallel to the PE anti-debug recipes A-T (../anti-analysis.md): per **file type**, gives "trigger -> one-line action -> Evidence".
 > **Not** a second master workflow. After Triage identifies the type, jump to the corresponding skill + this table.
 > Default: **authorized isolated lab / authorized samples and devices**. Device-wipers, BYOVD, reflective injection etc. are written as **detection and forensics**, not as unauthorized destruction/exploitation tutorials.
 > Bypass or recovery failures also MUST be recorded as Evidence; never silently treat as "benign".
 >
-> §1-§8 / U-AV = original rules (Issue #65). §9-§23 / AW-DN = extension rules (Issue #87, deduplicated + semantic enhancements + edge-case patches).
+> §1-§8 / U–AV = original rules (Issue #65). §9-§23 / AW-DN = extension rules (Issue #87, deduplicated + semantic enhancements + edge-case patches).
 
 ## 0. Routing Quick Reference
 

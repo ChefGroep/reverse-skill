@@ -87,7 +87,7 @@ Apply the Base elements below by report type. **MUST** items are not omissible; 
 ### 3.4 Key findings (Findings table or numbered list, carrying evidence_ids)
 
 ## 4. Incident response
-(execute only within the authorized scope: first confirm scope and preserve evidence — sample, memory, process tree, network connections, logs — then isolate the host; only after approval by the responsible owner, terminate processes, quarantine/clean files, check hosts/startup items, run a full scan, and re-verify. Do not delete files before evidence preservation.)
+(execute only within the authorized scope: confirm scope and preserve evidence first — sample, memory, process tree, network connections, logs — then isolate the host; only after approval by the responsible owner, terminate processes, quarantine/clean files, check hosts/startup items, run a full scan, and re-verify. Never delete files before evidence preservation.)
 
 ## 5. Summary notes
 (risk reminders and prevention for ordinary users/ops)
