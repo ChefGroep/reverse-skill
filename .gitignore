@@ -75,3 +75,6 @@ master-route-*/
 mcps/
 # local experiment dirs (never ship)
 *-scope-*/
+
+# target dossier findings never ship in the skill repo (OSINT campaigns live outside git)
+Osint/
