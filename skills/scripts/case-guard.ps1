@@ -29,6 +29,7 @@ if (-not (Test-Path -LiteralPath $scopePath)) {
 
 $scope = Get-Content -LiteralPath $scopePath -Raw -Encoding UTF8
 $issues = New-Object System.Collections.Generic.List[string]
+. (Join-Path (Join-Path $PSScriptRoot 'lib') 'OwnInfra.ps1')
 
 function Get-ScopeSection([string] $Text, [string] $Name) {
     $pattern = '(?ms)^##\s*' + [regex]::Escape($Name) + '\s*\r?\n(?<body>.*?)(?=^##\s|\z)'
@@ -79,6 +80,31 @@ if ($inScopeSection -and $inScopeSection -match '(?ms)-\s*assets:\s*\r?\n(?<body
 }
 if (-not $hasAsset -and $netMode -ne 'offline') {
     [void]$issues.Add('in_scope.assets appears empty')
+}
+
+# own-infra defense-in-depth: a scope claiming the own-infra preset (or the
+# own_infra auth basis) must list ONLY assets covered by the ownership
+# allowlist. Hand-edited scopes are re-verified here (parity with case-guard.sh).
+$presetField = (Get-SectionField -Section (Get-ScopeSection -Text $scope -Name 'meta') -Name 'preset').ToLowerInvariant()
+$basisField = (Get-SectionField -Section $authSection -Name 'basis').ToLowerInvariant()
+if ($authGranted -and ($presetField -in @('own-infra', 'chef-infra') -or $basisField -eq 'own_infra')) {
+    $allowListPath = Join-Path (Split-Path -Parent $PSScriptRoot) (Join-Path 'config' 'own-infra.allowlist')
+    if (-not (Test-Path -LiteralPath $allowListPath)) {
+        [void]$issues.Add("own-infra scope: allowlist missing: $allowListPath")
+    } else {
+        $oiBody = $null
+        if ($inScopeSection -match '(?ms)-\s*assets:\s*\r?\n(?<body>(?:.+\r?\n?)*)') { $oiBody = $Matches['body'] }
+        if ($oiBody) {
+            foreach ($line in ($oiBody -split "\r?\n")) {
+                if ($line -match '^\s+-\s+(.+?)\s*$') {
+                    $v = $Matches[1]
+                    if ($v -and $v -ne '[]' -and -not (Test-OwnInfraHost -AllowListPath $allowListPath -HostOrIp $v)) {
+                        [void]$issues.Add("own-infra scope: asset not in own-infra.allowlist: $v")
+                    }
+                }
+            }
+        }
+    }
 }
 
 # ready_for_act

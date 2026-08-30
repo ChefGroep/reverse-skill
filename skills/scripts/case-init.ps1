@@ -21,6 +21,7 @@ param(
     [string] $Sample = '',
     [string] $Preset = '',
     [string[]] $InScopeAssets = @(),
+    [string] $Targets = '',
     [string] $NetworkProfile = '',
     [switch] $ReadyForAct
 )
@@ -32,6 +33,8 @@ $skillsRoot = Split-Path -Parent $scriptDir
 if (-not $PackageRoot) { $PackageRoot = Split-Path -Parent $skillsRoot }
 . (Join-Path (Join-Path $scriptDir 'lib') 'WorkRoot.ps1')
 . (Join-Path (Join-Path $scriptDir 'lib') 'HostRuntime.ps1')
+. (Join-Path (Join-Path $scriptDir 'lib') 'OwnInfra.ps1')
+. (Join-Path (Join-Path $scriptDir 'lib') 'OwnInfra.ps1')
 $HostExe = Resolve-ReverseHostExe
 $requestedProjectRoot = if (-not [string]::IsNullOrWhiteSpace($ProjectRoot)) {
     $ProjectRoot
@@ -54,6 +57,7 @@ if (-not [string]::IsNullOrWhiteSpace($Sample)) {
 }
 
 # Cross-platform case presets. Keep semantics aligned with case-init.sh.
+$ownInfraPreset = $false
 $presetNormalized = $Preset.Trim().ToLowerInvariant()
 if ($presetNormalized -in @('offline-sample', 'own-sample', 'local-sample')) {
     $AuthGranted = $true
@@ -75,8 +79,17 @@ if ($presetNormalized -in @('offline-sample', 'own-sample', 'local-sample')) {
     $AuthBasis = 'own_system'
     if ([string]::IsNullOrWhiteSpace($NetworkProfile)) { $NetworkProfile = 'lab_only' }
     if ([string]::IsNullOrWhiteSpace($EvidenceOfAuth)) { $EvidenceOfAuth = 'preset:own-system/lab' }
+} elseif ($presetNormalized -in @('own-infra', 'chef-infra')) {
+    # Operator-owned infrastructure. Provisional grant: kept only when EVERY
+    # asset matches skills/config/own-infra.allowlist (validated after assets
+    # resolve below). Never grants vendor/SaaS or third-party hosts.
+    $ownInfraPreset = $true
+    $AuthGranted = $true
+    $AuthBasis = 'own_infra'
+    if ([string]::IsNullOrWhiteSpace($NetworkProfile)) { $NetworkProfile = 'authorized_target_only' }
+    if ([string]::IsNullOrWhiteSpace($EvidenceOfAuth)) { $EvidenceOfAuth = 'preset:own-infra (operator-owned, allowlist-verified)' }
 } elseif (-not [string]::IsNullOrWhiteSpace($Preset)) {
-    Write-Host ("WARN: unknown -Preset '{0}' (allowed: offline-sample|ctf-public|own-system)" -f $Preset) -ForegroundColor Yellow
+    Write-Host ("WARN: unknown -Preset '{0}' (allowed: offline-sample|ctf-public|own-system|own-infra)" -f $Preset) -ForegroundColor Yellow
 }
 
 if (-not $CaseName) {
@@ -142,9 +155,34 @@ foreach ($a in @($InScopeAssets)) {
         [void]$assets.Add($a.Trim())
     }
 }
+foreach ($t in ($Targets -split ',')) {
+    $t2 = $t.Trim()
+    if ($t2 -and -not $assets.Contains($t2)) { [void]$assets.Add($t2) }
+}
 # Also accept host-only tokens that look like domains/IPs from TargetUrl leftovers
 if ($assets.Count -eq 0 -and $Hint -match 'https?://([^\s/]+)') {
     [void]$assets.Add(('https://{0}/' -f $Matches[1]))
+}
+
+# own-infra preset validation: revoke the provisional grant when any asset is
+# not covered by the ownership allowlist (parity with case-init.sh).
+if ($ownInfraPreset) {
+    $allowListPath = Join-Path (Split-Path -Parent $scriptDir) (Join-Path 'config' 'own-infra.allowlist')
+    if (-not (Test-Path -LiteralPath $allowListPath)) {
+        $authStatusResolved = 'pending'
+        $evidenceAuth = "preset:own-infra REFUSED: allowlist missing: $allowListPath"
+        Write-Host ("WARN: own-infra preset refused - allowlist missing: {0}" -f $allowListPath) -ForegroundColor Yellow
+    } else {
+        $notOwned = @()
+        foreach ($a in $assets) {
+            if (-not (Test-OwnInfraHost -AllowListPath $allowListPath -HostOrIp $a)) { $notOwned += $a }
+        }
+        if ($notOwned.Count -gt 0) {
+            $authStatusResolved = 'pending'
+            $evidenceAuth = 'preset:own-infra REFUSED for asset(s) outside own-infra.allowlist: ' + ($notOwned -join ', ')
+            Write-Host ("WARN: own-infra preset kept auth pending - outside own-infra.allowlist: {0}" -f ($notOwned -join ', ')) -ForegroundColor Yellow
+        }
+    }
 }
 
 $networkMode = 'offline'
