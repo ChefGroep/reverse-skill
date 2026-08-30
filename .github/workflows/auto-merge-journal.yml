@@ -23,26 +23,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate PR safety
-        id: validate
+      - name: Classify journal-only eligibility
+        id: eligibility
         run: |
           set -e
-          
-          # 1. Only .md files under field-journal/ may be changed
           CHANGED_FILES=$(gh pr diff "$PR_NUMBER" --name-only)
           echo "Changed files:"
           echo "$CHANGED_FILES"
-          
-          # Strict whitelist: only .md files under field-journal/
+
           INVALID_FILES=$(echo "$CHANGED_FILES" | grep -v '^skills/field-journal/.*\.md$' || true)
           if [ -n "$INVALID_FILES" ]; then
-            echo "❌ BLOCKED: PR modifies files outside field-journal"
-            echo "$INVALID_FILES"
-            echo "valid=false" >> $GITHUB_OUTPUT
-            exit 1
+            echo "ℹ️ Not a journal-only PR; auto-merge lane is not applicable."
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+
+          echo "eligible=true" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate PR safety
+        id: validate
+        if: steps.eligibility.outputs.eligible == 'true'
+        run: |
+          set -e
+          CHANGED_FILES=$(gh pr diff "$PR_NUMBER" --name-only)
           
-          # CONTRIBUTE-BACK.md and _template.md (system files) must not be modified
+          # 1. CONTRIBUTE-BACK.md and _template.md (system files) must not be modified
           SYSTEM_FILES=$(echo "$CHANGED_FILES" | grep -E '(CONTRIBUTE-BACK\.md|_template\.md)' || true)
           if [ -n "$SYSTEM_FILES" ]; then
             echo "❌ BLOCKED: system files must not be modified"
@@ -156,7 +163,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on failure
-        if: steps.validate.outputs.valid == 'false'
+        if: always() && steps.eligibility.outputs.eligible == 'true' && steps.validate.outputs.valid == 'false'
         run: |
           gh pr comment "$PR_NUMBER" \
             --body "❌ **Auto-review failed**

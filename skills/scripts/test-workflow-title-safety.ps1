@@ -25,6 +25,10 @@ Check ($text -match '(?m)^\s+PR_SUBJECT:\s*\$\{\{\s*format\(') 'PR subject is co
 Check ($text -match '(?ms)gh pr merge "\$PR_NUMBER".*--subject "\$PR_SUBJECT"') 'merge command quotes the PR number and subject'
 Check ($text -notmatch '(?m)--subject[^\r\n]*github\.event\.pull_request\.title') 'PR title is not interpolated into the merge command'
 Check ($text -notmatch '(?m)gh pr (?:diff|merge|comment)\s+\$\{\{') 'GitHub CLI commands do not embed event expressions'
+Check ($text -match '(?m)^\s+- name: Classify journal-only eligibility\r?\n\s+id: eligibility') 'mixed PRs are classified before journal validation'
+Check ($text -match 'eligible=false[^\r\n]*\r?\n\s+exit 0') 'ineligible mixed PRs exit successfully instead of failing CI'
+Check ($text -match "(?m)^\s+if: steps\.eligibility\.outputs\.eligible == 'true'") 'journal safety scan runs only for eligible journal-only PRs'
+Check ($text -match "(?m)^\s+if: always\(\) && steps\.eligibility\.outputs\.eligible == 'true' && steps\.validate\.outputs\.valid == 'false'") 'blocked journal candidates still run the failure comment step'
 
 $maliciousTitle = '$(Write-Host injected) `' + [Environment]::NewLine + '"quoted"; Get-ChildItem > should-not-run'
 $subject = '[field-journal] ' + $maliciousTitle
