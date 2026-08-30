@@ -54,7 +54,7 @@ bash "$SCRIPT_DIR/case-init.sh" \
   --case-name "test-bash-05" \
   --package-root "$SCRATCH" \
   --preset own-infra \
-  --targets "deepseek.chefgroep.online,10.0.0.5" > "$SCRATCH/own-infra-grant.log"
+  --targets "deepseek.chefgroep.online" > "$SCRATCH/own-infra-grant.log"
 if ! grep -q "auth.status=granted" "$SCRATCH/own-infra-grant.log"; then
     echo "FAIL: own-infra preset did not grant allowlisted host"
     exit 1
@@ -81,8 +81,26 @@ fi
 echo "[Test 7] case-guard rejects foreign asset in own-infra scope"
 sed -i 's|https://example.com|https://foreign.invalid|g' "$SCRATCH/work/test-bash-06/scope.md"
 sed -i 's/status: pending/status: granted/' "$SCRATCH/work/test-bash-06/scope.md"
-if bash "$SCRIPT_DIR/case-guard.sh" --case-root "$SCRATCH/work/test-bash-06" > /dev/null 2>&1; then
+guard_output="$(bash "$SCRIPT_DIR/case-guard.sh" --case-root "$SCRATCH/work/test-bash-06" 2>&1)" && {
     echo "FAIL: case-guard accepted foreign asset under own-infra preset"
+    exit 1
+}
+if ! grep -q "own-infra scope: asset not in own-infra.allowlist" <<< "$guard_output"; then
+    echo "FAIL: case-guard rejected foreign asset for an unrelated reason"
+    printf '%s\n' "$guard_output"
+    exit 1
+fi
+
+# Test 8: generic private addressing is not ownership evidence
+echo "[Test 8] own-infra preset keeps generic private IP pending"
+bash "$SCRIPT_DIR/case-init.sh" \
+  --hint "private range is not ownership" \
+  --case-name "test-bash-08" \
+  --package-root "$SCRATCH" \
+  --preset own-infra \
+  --targets "10.0.0.5" > "$SCRATCH/own-infra-private-deny.log"
+if ! grep -q "auth.status=pending" "$SCRATCH/own-infra-private-deny.log"; then
+    echo "FAIL: generic private IP was treated as operator-owned"
     exit 1
 fi
 

@@ -58,7 +58,7 @@ Bring the post-translation merge on the main line back to fully green CI: fix a 
 
 ## Key Code/Commands
 
-```
+```shell
 DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 pwsh -NoProfile -File skills/scripts/extract-summaries.ps1
 DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 pwsh -NoProfile -File skills/scripts/extract-summaries.ps1 -Check
 gh run watch <run-id> --exit-status > /tmp/ci-watch.log 2>&1; echo "CI_EXIT=$?"

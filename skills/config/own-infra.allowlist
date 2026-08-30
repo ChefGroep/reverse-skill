@@ -22,8 +22,5 @@ chefgroep.nl
 # ChefGroep Tailscale tailnet
 tail86a8f2.ts.net
 
-# Lab / private ranges
-cidr:10.0.0.0/8
-cidr:172.16.0.0/12
-cidr:192.168.0.0/16
-cidr:100.64.0.0/10
+# Operator-owned address ranges may be added as explicit CIDRs.
+# Do not add generic RFC1918 or CGNAT ranges: private addressing is not proof of ownership.
