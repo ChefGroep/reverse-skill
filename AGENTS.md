@@ -1,29 +1,29 @@
-# reverse-skill — 平台无关项目入口
+# reverse-skill — Platform-Independent Project Entry
 
-本仓库是一个**安全任务技能路由包**（逆向工程 / 渗透测试 / 安全分析）。`RULES.md` 是行为链唯一真相源。
+This repository is a **security task skill-routing package** (reverse engineering / penetration testing / security analysis). `RULES.md` is the single source of truth for the behavior chain.
 
-## 路由
+## Routing
 
-用户任务命中安全/逆向关键词时：
+When a user task matches a security/reverse keyword:
 
-1. `skills/MASTER-ROUTING.md` 或平台对应入口 → PRIMARY：
-   - Windows：`powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/master-route.ps1 -Hint "<任务>"`
-   - Linux / macOS / Kali：`bash skills/scripts/master-route.sh --hint "<任务>"`
-2. 歧义时读 `skills/routing.md` 全矩阵（三轴：目标类型 / 用户意图 / 工具链）
-3. 路由规则唯一事实源：`skills/config/routing.json`（改路由只改这里）
+1. `skills/MASTER-ROUTING.md` or the platform entry point → PRIMARY:
+   - Windows: `powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/master-route.ps1 -Hint "<task>"`
+   - Linux / macOS / Kali: `bash skills/scripts/master-route.sh --hint "<task>"`
+2. When ambiguous, read the full `skills/routing.md` matrix (three axes: target type / user intent / toolchain)
+3. Single source of truth for routing rules: `skills/config/routing.json` (change routing only here)
 
-## 授权门禁（硬性）
+## Authorization Gate (Hard)
 
-- 对任何目标动手前，按平台初始化当前分析项目的 `work/<case>/scope.md`：
-  - Windows：`powershell -File skills/scripts/case-init.ps1 -Hint "<任务>"`
-  - Linux / macOS / Kali：`bash skills/scripts/case-init.sh --hint "<任务>"`
-- 本地离线样本可使用 `offline-sample` preset；`auth.status=granted` + 明确 sample 才可进入 ACT。
-- `auth.status=granted` + 合法 `network_profile` / offline sample 就绪前**禁止 ACT**；`case-guard --force` / `-Force` 不得绕过这个硬门。
-- 证据链：`skills/ops/evidence-finding-path.md`；角色：`skills/ops/role-map.md`
+- Before touching any target, initialize the current analysis project's `work/<case>/scope.md` per platform:
+  - Windows: `powershell -File skills/scripts/case-init.ps1 -Hint "<task>"`
+  - Linux / macOS / Kali: `bash skills/scripts/case-init.sh --hint "<task>"`
+- Local offline samples may use the `offline-sample` preset; `auth.status=granted` + an explicit sample are required before entering ACT.
+- ACT is forbidden until `auth.status=granted` + a valid `network_profile` / offline sample is ready; `case-guard --force` / `-Force` must never bypass this hard gate.
+- Evidence chain: `skills/ops/evidence-finding-path.md`; roles: `skills/ops/role-map.md`
 
-## 首次运行
+## First Run
 
-`skills/tool-index.md` 是 gitignored 的生成文件，首次使用前按平台运行：
+`skills/tool-index.md` is a gitignored generated file. Before first use, run it per platform:
 
 ```text
 Windows:           powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/refresh-tool-index.ps1
@@ -31,12 +31,12 @@ Linux / macOS:     bash skills/scripts/refresh-tool-index.sh
 Kali:              bash kali/scripts/refresh-tool-index.sh
 ```
 
-缺工具 → 使用同平台 bootstrap：Windows `skills/scripts/bootstrap-reverse.ps1`；Linux / macOS `skills/scripts/bootstrap-reverse.sh`；Kali `kali/scripts/bootstrap-reverse.sh`（清单能力，禁止猜路径）。
+Missing tools → use the same-platform bootstrap: Windows `skills/scripts/bootstrap-reverse.ps1`; Linux / macOS `skills/scripts/bootstrap-reverse.sh`; Kali `kali/scripts/bootstrap-reverse.sh` (manifest capabilities only, never guess paths).
 
-## 测试（改动后必跑）
+## Tests (MUST run after changes)
 
 ```text
-Windows / PowerShell（路由回归读取 routing-benchmark.json）：
+Windows / PowerShell (routing regression reads routing-benchmark.json):
   powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
   powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/verify-routing-coherence.ps1
   powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
@@ -46,8 +46,8 @@ Linux / macOS routing parity:
   bash skills/scripts/test-bootstrap-manifest.sh
 ```
 
-## 客户端边界
+## Client Boundary
 
-- 路由核心、测试和工具清单必须与具体 AI 客户端解耦。
-- Claude Code、Codex、Cursor、OpenCode 等客户端只能通过各自适配层接入，不得成为仓库默认身份或核心配置依赖。
-- `skills/INDEX.md` 由 `extract-summaries.ps1` 从全部 `SKILL.md` 动态生成，不硬编码客户端或模块数量。
+- The routing core, tests and tool manifest must stay decoupled from any specific AI client.
+- Claude Code, Codex, Cursor, OpenCode and other clients may only connect through their own adapter layer, and must never become the repository's default identity or core-configuration dependency.
+- `skills/INDEX.md` is generated dynamically by `extract-summaries.ps1` from every `SKILL.md`; no clients or module counts are hardcoded.

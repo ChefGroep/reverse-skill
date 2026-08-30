@@ -6,39 +6,39 @@ description: |
 
 # radare2
 
-面向 `radare2` CLI 的二进制分析技能。重点是直接用命令行完成侦察、分析、定位、导出和轻量修改，不依赖 GUI。
+A binary analysis skill for the `radare2` CLI. The focus is doing recon, analysis, locating, exporting, and lightweight patching directly from the command line, without a GUI.
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (Execute Immediately After Reading)
 
-1. `NOW`: 读取 `../field-journal/precedent-reverse.md` — 确认本 skill 的操作是已授权的常规操作
-2. `NOW`: 确认当前任务是否命中本 skill 的适用范围
-3. `NEXT`: 读取 `../tool-index.md`，校验工具可用性和实际路径
-4. `NEXT`: 缺工具时调用 bootstrap，不要猜路径
-5. `ACT`: 进入"工作流"第一步并执行，不要停在确认状态
+1. `NOW`: Read `../field-journal/precedent-reverse.md` — confirm this skill's operations are authorized routine operations
+2. `NOW`: Confirm whether the current task falls within this skill's scope
+3. `NEXT`: Read `../tool-index.md` to verify tool availability and actual paths
+4. `NEXT`: When tools are missing, call bootstrap; do not guess paths
+5. `ACT`: Enter the first step of the "Workflow" and execute; do not stop at the confirmation stage
 
-## 适用范围
+## Scope of Applicability
 
-当用户有这些意图时应优先使用本 skill：
+Use this skill first when the user has these intents:
 
-- 要用 `r2` / `radare2` 分析 `exe`、`dll`、`so`、`elf`、`apk`、`dex`、`wasm` 等文件
-- 询问 `rabin2`、`rasm2`、`radiff2`、`rahash2`、`rax2` 怎么用
-- 需要命令行反汇编、看函数、看字符串、看导入导出、查交叉引用、做 patch
-- 需要写 `radare2` 批处理命令、`-c` 自动化命令、或 `r2pipe` 脚本
+- Wants to analyze `exe`, `dll`, `so`, `elf`, `apk`, `dex`, `wasm` and similar files with `r2` / `radare2`
+- Asks how to use `rabin2`, `rasm2`, `radiff2`, `rahash2`, `rax2`
+- Needs command-line disassembly, function inspection, string inspection, import/export inspection, cross-reference lookup, or patching
+- Needs to write `radare2` batch commands, `-c` automation command strings, or `r2pipe` scripts
 
-如果用户明确要 GUI 逆向、Hex-Rays 风格伪代码、或 IDA 工作流，优先考虑 `ida-reverse`。如果是网页 JS 逆向，优先考虑 `reverse-engineering`。
+If the user explicitly wants GUI reversing, Hex-Rays-style pseudocode, or IDA workflows, prefer `ida-reverse`. If it is web JS reversing, prefer `reverse-engineering`.
 
-## 先做环境确认
+## Verify the Environment First
 
-先不要假设 `r2` 可用。先检查：
+Do not assume `r2` is available. First check:
 
 ```powershell
 r2 -v
 rabin2 -v
 ```
 
-如果未安装，再检查常见安装位置或提示安装。
+If not installed, then check common install locations or prompt for installation.
 
-Windows 常见可执行文件：
+Common Windows executables:
 
 - `radare2.exe`
 - `rabin2.exe`
@@ -48,28 +48,28 @@ Windows 常见可执行文件：
 - `rax2.exe`
 - `r2pm.exe`
 
-## 内置资源
+## Bundled Resources
 
-这个 skill 自带两个资源，优先复用，不要每次临时组织一套重复命令。
+This skill ships with two resources; reuse them first instead of improvising a duplicate command set every time.
 
 ### `scripts/recon.ps1`
 
-标准侦察脚本，适合先做第一轮概况分析。会输出：
+Standard recon script, suited for the first-round survey. It outputs:
 
-- 基本信息
-- 节区
-- 导入
-- 导出
-- 字符串
-- 可选的 `r2 -A` 自动分析摘要
+- Basic info
+- Sections
+- Imports
+- Exports
+- Strings
+- Optional `r2 -A` auto-analysis summary
 
-调用方式：
+Invocation:
 
 ```powershell
 powershell -File "<skill-root>\radare2\scripts\recon.ps1" -TargetPath "C:\path\to\sample.exe"
 ```
 
-如果需要附带 `r2` 自动分析：
+To include `r2` auto analysis:
 
 ```powershell
 powershell -File "<skill-root>\radare2\scripts\recon.ps1" -TargetPath "C:\path\to\sample.exe" -RunAnalysis
@@ -77,72 +77,72 @@ powershell -File "<skill-root>\radare2\scripts\recon.ps1" -TargetPath "C:\path\t
 
 ### `references/cheatsheet.md`
 
-当需要更多命令细节、常见场景模板、或要快速回忆语法时，读取这个速查表，而不是凭记忆硬猜。
+When you need more command details, common scenario templates, or to quickly recall syntax, read this cheatsheet instead of guessing from memory.
 
-## 已知现象
+## Known Behaviors
 
-### Windows 下偶发 `.sdb` 缺失告警
+### Occasional missing-`.sdb` warning on Windows
 
-某些 PE 文件在 `rabin2` 侦察时，可能出现类似下面的告警：
+Some PE files may trigger warnings like the following during `rabin2` recon:
 
 ```text
 ERROR: Cannot find ...\share\format\dll\*.sdb
 ```
 
-如果主体输出仍然正常返回，通常不影响基础侦察结论，先继续分析即可。不要因为这类附带告警就直接判定分析失败。
+If the main output still returns normally, this usually does not affect the basic recon conclusion; just continue analyzing. Do not declare the analysis failed because of such incidental warnings.
 
-## 基本原则
+## Basic Principles
 
-### 1. 先侦察，后深挖
+### 1. Recon first, deep-dive later
 
-不要一上来就全量自动分析。先用轻量命令确认文件类型、架构、入口点、字符串、导入表，再决定是否做 `aaa`、`aaaa` 或定向分析。
+Do not jump straight into full auto analysis. First use lightweight commands to confirm file type, architecture, entry point, strings, and the import table, then decide whether to run `aaa`, `aaaa`, or targeted analysis.
 
-### 2. 优先最小足够命令
+### 2. Prefer minimal sufficient commands
 
-`radare2` 命令非常多，用户通常只需要最短路径：
+`radare2` has a huge command set; the user usually only needs the shortest path:
 
-- 看文件信息：`rabin2 -I`
-- 看字符串：`rabin2 -z`
-- 看导入导出：`rabin2 -i` / `rabin2 -E`
-- 交互分析：`r2 <file>` 后再执行局部命令
+- File info: `rabin2 -I`
+- Strings: `rabin2 -z`
+- Imports/exports: `rabin2 -i` / `rabin2 -E`
+- Interactive analysis: `r2 <file>` then run targeted commands
 
-### 3. 修改前保持谨慎
+### 3. Be cautious before modifying
 
-如果用户要 patch 二进制：
+If the user wants to patch a binary:
 
-- 默认先只读打开：`r2 <file>`
-- 只有在明确需要修改时再用写模式：`r2 -w <file>` 或会话中 `oo+`
-- 修改前先告知风险，避免无意覆盖原文件
+- Default to read-only open first: `r2 <file>`
+- Use write mode only when modification is explicitly needed: `r2 -w <file>` or `oo+` in a session
+- State the risks before modifying, avoiding unintentional overwrite of the original file
 
-## 常用工作流
+## Common Workflows
 
-## 工作流 1：快速侦察
+## Workflow 1: Quick Recon
 
-适合刚拿到一个二进制文件时。
+Suited for when you have just received a binary.
 
-### 硬门禁（MUST — 未满足禁止进入工作流 2 及后续）
+### Hard Gate (MUST — forbidden to enter Workflow 2 and beyond until satisfied)
 
-对 PE/ELF/Mach-O 等含导入表的二进制，**MUST** 先完成导入表检查并落成 Evidence，再进入函数级分析或动态步骤：
+For binaries with an import table such as PE/ELF/Mach-O, the import table check **MUST** be completed and written into Evidence before entering function-level analysis or dynamic steps:
 
-1. 执行 `rabin2 -i <sample>`（或 `recon.ps1` 输出中的 imports 段）；DLL/SYS 另 MUST `rabin2 -E` 并记 `E-exports`
-2. 将完整/分类后的导入表结果写入 Evidence（建议 id：`E-imports` 或 `E-triage-imports`），至少包含：
-   - 复现命令（`repro_command`）
-   - 关键导入分类摘要：网络 / 文件 / 加密 / 进程注入 / 注册表 / 其他可疑 API
-   - 若导入表为空、解析失败或工具报错：仍 MUST 记录失败现象与原始输出为 Evidence，**不得静默跳过**
-   - 导入表「过干净」（仅基础 DLL）：MUST 注明动态加载嫌疑，SHOULD 转入动态抓 API
-3. .NET 等无传统 IAT：MUST 走等价锚点（dnSpy/IL/元数据摘要）写入同一 Evidence 语义槽，禁止空过
-4. 加壳样本 IAT 修复：x86 用 ImportREC（或等价）、x64 用 Scylla（或等价）。修复失败 MUST 记 `E-iat-repair-fail` 后转动态 API 断点；**禁止**在静态 IAT 上无限死磕（见 `reverse-engineering/references/re-agent-workflow.md` §1.2）
-5. 用户明确要求「重做导入表检查 / 重新检查导入表 / 重做 IAT」时：MUST 重做被点名步骤本身（阻塞时先走可行性门闩：说明前提+请确认；强制则标 quality=unreadable），**禁止改换为无关步骤冒充完成**
+1. Run `rabin2 -i <sample>` (or the imports section of `recon.ps1` output); DLL/SYS additionally MUST `rabin2 -E` and record `E-exports`
+2. Write the complete/categorized import table results into Evidence (suggested id: `E-imports` or `E-triage-imports`), containing at least:
+   - Reproduction command (`repro_command`)
+   - Key import category summary: network / file / crypto / process injection / registry / other suspicious APIs
+   - If the import table is empty, parsing fails, or the tool errors: the failure behavior and raw output MUST still be recorded as Evidence; **never silently skip**
+   - Import table 'too clean' (only base DLLs): MUST note dynamic-loading suspicion, SHOULD switch to dynamic API capture
+3. .NET and others without a traditional IAT: MUST use equivalent anchors (dnSpy/IL/metadata summary) written into the same Evidence semantic slot; passing empty is forbidden
+4. Packed-sample IAT repair: x86 uses ImportREC (or equivalent), x64 uses Scylla (or equivalent). On repair failure MUST record `E-iat-repair-fail` then switch to dynamic API breakpoints; **grinding endlessly** on the static IAT is forbidden (see `reverse-engineering/references/re-agent-workflow.md` §1.2)
+5. When the user explicitly asks to 'redo the import table check / recheck the import table / redo the IAT': the named step itself MUST be redone (when blocked, first apply the feasibility latch: state the prerequisites + ask for confirmation; if forced, mark quality=unreadable); **swapping in unrelated steps to fake completion is forbidden**
 
-未记录导入表（或合法等价锚点 / IAT 失败旁路）Evidence 前：MUST NOT 声称「基础侦察完成」，MUST NOT 进入工作流 2+ 的深挖结论。
+Before the import table (or a legitimate equivalent anchor / IAT-failure bypass) Evidence is recorded: MUST NOT claim 'basic recon complete', MUST NOT enter Workflow 2+ deep-dive conclusions.
 
-优先直接运行内置脚本：
+Prefer running the bundled script directly:
 
 ```powershell
 powershell -File "<skill-root>\radare2\scripts\recon.ps1" -TargetPath "sample.exe"
 ```
 
-如果只需要手动最小命令，则使用：
+If only minimal manual commands are needed, use:
 
 ```powershell
 rabin2 -I sample.exe
@@ -151,39 +151,39 @@ rabin2 -i sample.exe
 rabin2 -E sample.exe
 ```
 
-关注点：
+Focus points:
 
-- 文件格式、位数、架构、平台
-- 入口点地址
-- 可疑字符串：URL、路径、报错、注册表、命令行参数
-- 导入函数：网络、文件、加密、进程注入、注册表操作（**MUST 落 Evidence，见上方硬门禁**）
+- File format, bitness, architecture, platform
+- Entry point address
+- Suspicious strings: URLs, paths, errors, registry, command-line arguments
+- Import functions: network, file, crypto, process injection, registry operations (**MUST land in Evidence, see the hard gate above**)
 
-## 工作流 2：交互式分析函数
+## Workflow 2: Interactive Function Analysis
 
 ```powershell
 r2 sample.exe
 ```
 
-进入后常用：
+Common commands after entering:
 
 ```text
-aaa          # 常规自动分析
-afl          # 列出函数
-iz           # 列出字符串
-iS           # 列节区
-is           # 列符号
-s entry0     # 跳到入口点
-pdf          # 反汇编当前函数
-VV           # 进入可视化模式（如果终端适合）
-q            # 退出
+aaa          # routine auto analysis
+afl          # list functions
+iz           # list strings
+iS           # list sections
+is           # list symbols
+s entry0     # jump to entry point
+pdf          # disassemble current function
+VV           # enter visual mode (if the terminal suits it)
+q            # quit
 ```
 
-说明：
+Notes:
 
-- 默认优先 `aaa`，不要一开始就用更重的 `aaaa`
-- 如果样本很大或分析很慢，可以只分析入口附近，再手动扩展
+- Prefer `aaa` by default; do not start with the heavier `aaaa`
+- If the sample is large or analysis is slow, analyze only around the entry first, then expand manually
 
-## 工作流 3：定位 main / 关键逻辑
+## Workflow 3: Locating main / Key Logic
 
 ```text
 afl~main
@@ -193,30 +193,30 @@ iz~error
 axt <addr>
 ```
 
-思路：
+Approach:
 
-- 先从 `main`、入口点、字符串引用入手
-- 用 `axt` 查谁引用了某个字符串或地址
-- 找到引用点后再 `s <addr>`、`pdf`
+- Start from `main`, the entry point, and string references
+- Use `axt` to find who references a string or address
+- After finding the reference point, `s <addr>` and `pdf`
 
-## 工作流 4：十六进制与内存查看
+## Workflow 4: Hex and Memory Inspection
 
 ```text
-px 64        # 当前地址起 64 字节十六进制
-pd 20        # 反汇编 20 条指令
-psz          # 读取当前地址字符串
-pxa          # 更友好的十六进制视图
+px 64        # 64 bytes of hex from the current address
+pd 20        # disassemble 20 instructions
+psz          # read the string at the current address
+pxa          # friendlier hex view
 ```
 
-## 工作流 5：二进制 patch
+## Workflow 5: Binary Patching
 
-仅当用户明确要求修改文件时使用：
+Only use when the user explicitly asks to modify the file:
 
 ```powershell
 r2 -w sample.exe
 ```
 
-进入后例如：
+For example, after entering:
 
 ```text
 s 0x401000
@@ -225,51 +225,51 @@ wa jmp 0x401050
 wq
 ```
 
-常见写操作：
+Common write operations:
 
-- `wa <asm>`：写汇编
-- `wx <hex>`：写原始字节
-- `wq`：写入并退出
+- `wa <asm>`: write assembly
+- `wx <hex>`: write raw bytes
+- `wq`: write and quit
 
-修改前最好先备份原文件。如果用户没提备份，至少提醒一次。
+Back up the original file before modifying. If the user did not mention a backup, remind at least once.
 
-## 工作流 6：非交互自动化
+## Workflow 6: Non-Interactive Automation
 
-适合一次性输出结果：
+Suited for one-shot output:
 
 ```powershell
 r2 -A -q -c "afl;iz;ii;q" sample.exe
 ```
 
-常用参数：
+Common parameters:
 
-- `-A`：启动时自动分析
-- `-q`：安静模式
-- `-c`：执行命令串
+- `-A`: auto analysis at startup
+- `-q`: quiet mode
+- `-c`: execute a command string
 
-如果命令很多，优先整理成易读顺序，不要塞入难以维护的超长串。
+If there are many commands, prefer organizing them in a readable order; do not cram them into an unmaintainable extra-long string.
 
-更推荐先用内置侦察脚本打底，再决定要不要补定制命令。
+Better yet, run the bundled recon script first, then decide whether to add custom commands.
 
-## 常用子工具
+## Common Sub-Tools
 
 ### `rabin2`
 
-适合静态信息提取：
+Suited for static information extraction:
 
 ```powershell
-rabin2 -I sample.exe   # 基本信息
-rabin2 -S sample.exe   # 节区
-rabin2 -s sample.exe   # 符号
-rabin2 -i sample.exe   # 导入
-rabin2 -E sample.exe   # 导出
-rabin2 -z sample.exe   # 字符串
-rabin2 -zz sample.exe  # 更详细字符串
+rabin2 -I sample.exe   # basic info
+rabin2 -S sample.exe   # sections
+rabin2 -s sample.exe   # symbols
+rabin2 -i sample.exe   # imports
+rabin2 -E sample.exe   # exports
+rabin2 -z sample.exe   # strings
+rabin2 -zz sample.exe  # more detailed strings
 ```
 
 ### `rasm2`
 
-适合快速汇编/反汇编：
+Suited for quick assembly/disassembly:
 
 ```powershell
 rasm2 -d "9090"
@@ -278,7 +278,7 @@ rasm2 -a x86 -b 64 "xor eax, eax"
 
 ### `radiff2`
 
-适合对比两个二进制：
+Suited for comparing two binaries:
 
 ```powershell
 radiff2 old.exe new.exe
@@ -287,7 +287,7 @@ radiff2 -C old.exe new.exe
 
 ### `rahash2`
 
-适合算哈希：
+Suited for computing hashes:
 
 ```powershell
 rahash2 -a md5 sample.exe
@@ -296,7 +296,7 @@ rahash2 -a sha256 sample.exe
 
 ### `rax2`
 
-适合进制和编码转换：
+Suited for number base and encoding conversion:
 
 ```powershell
 rax2 0x401000
@@ -304,148 +304,148 @@ rax2 4198400
 rax2 -s hello
 ```
 
-## 推荐分析顺序
+## Recommended Analysis Order
 
-遇到未知样本时，按这个顺序做：
+When facing an unknown sample, follow this order:
 
-1. `rabin2 -I` 看格式、架构、入口点
-2. `rabin2 -z` 看字符串
-3. `rabin2 -i` 看导入函数 — **MUST + Evidence（硬门，见工作流 1）**
-4. 如需交互分析，再进 `r2`（仅当步骤 3 的 Evidence 已落盘）
-5. 先 `aaa`，再 `afl` / `iz` / `pdf`
-6. 通过字符串引用、导入调用、入口流程逐步定位关键函数
+1. `rabin2 -I` for format, architecture, entry point
+2. `rabin2 -z` for strings
+3. `rabin2 -i` for import functions — **MUST + Evidence (hard gate, see Workflow 1)**
+4. If interactive analysis is needed, enter `r2` (only after the Step 3 Evidence is on disk)
+5. First `aaa`, then `afl` / `iz` / `pdf`
+6. Gradually locate key functions via string references, import calls, and entry flow
 
-这个顺序的好处是噪音低，能尽快建立方向感。步骤 3 不是可选优化，是进入深挖前的硬门。
+This order keeps noise low and builds a sense of direction quickly. Step 3 is not an optional optimization; it is a hard gate before deep-diving.
 
-## Windows 注意事项
+## Windows Notes
 
-- 路径里有空格时，命令必须正确加引号
-- 如果当前终端找不到 `r2`，可能是 `PATH` 刚更新，开一个新终端再试
-- 有些样本需要管理员权限读取，但默认不要主动提升权限，除非用户明确需要
-- 对可疑样本做动态调试前，要先确认用户意图，避免误操作
+- When a path contains spaces, the command must be quoted correctly
+- If the current terminal cannot find `r2`, `PATH` may have just been updated; open a new terminal and retry
+- Some samples need administrator rights to read, but do not escalate privileges proactively by default unless the user explicitly needs it
+- Before dynamic debugging of a suspicious sample, confirm user intent first to avoid accidental actions
 
-## 输出风格
+## Output Style
 
-当用户不是只要命令，而是要你实际分析文件时：
+When the user does not just want commands but wants you to actually analyze a file:
 
-- 先给出侦察结果摘要
-- 再列出关键证据：字符串、导入、函数、地址
-- 最后给出下一步建议或继续深入分析
+- First give a recon result summary
+- Then list key evidence: strings, imports, functions, addresses
+- Finally give next-step suggestions or continue deeper analysis
 
-不要只罗列命令而不解释为什么这么做。
+Do not just list commands without explaining why.
 
-## 典型请求示例
+## Typical Request Examples
 
-### 示例 1：分析一个 exe
+### Example 1: Analyzing an exe
 
-用户：`帮我看看这个 exe 干了什么，用 radare2 就行`
+User: `see what this exe does, radare2 is fine`
 
-处理方式：
+Handling:
 
-1. 先用 `rabin2 -I/-z/-i`
-2. 判断是否需要进入 `r2`
-3. 用 `aaa`、`afl`、`pdf` 深挖入口和关键字符串引用
+1. Start with `rabin2 -I/-z/-i`
+2. Decide whether to enter `r2`
+3. Use `aaa`, `afl`, `pdf` to deep-dive the entry and key string references
 
-### 示例 2：找字符串在哪被调用
+### Example 2: Finding Where a String Is Called
 
-用户：`这个报错字符串在哪个函数里触发的`
+User: `in which function is this error string triggered`
 
-处理方式：
+Handling:
 
-1. 用 `iz~关键字` 找字符串地址
-2. 用 `axt <addr>` 找引用
-3. 跳到引用点 `s <addr>` 后 `pdf`
+1. Use `iz~keyword` to find the string address
+2. Use `axt <addr>` to find references
+3. Jump to the reference point with `s <addr>`, then `pdf`
 
-### 示例 3：改掉跳转
+### Example 3: Changing a Jump
 
-用户：`把这个 jne 改成 je`
+User: `change this jne to je`
 
-处理方式：
+Handling:
 
-1. 先确认目标地址
-2. 明确告知要进入写模式
-3. 用 `wa je <target>` 或直接 `wx`
-4. 修改后再次反汇编验证
+1. Confirm the target address first
+2. Clearly state that write mode is needed
+3. Use `wa je <target>` or directly `wx`
+4. Disassemble again after modifying to verify
 
-## 避免的做法
+## Things to Avoid
 
-- 不要把 `radare2` 当成只有 `aaa` 一个命令的工具
-- 不要在未说明风险时直接写模式打开用户文件
-- 不要在还没做基础侦察前就下结论
-- **禁止跳过导入表检查**（`rabin2 -i` / recon imports）：未写入 Evidence 不得进入下一步；用户要求重做导入表时禁止改做其他步骤
-- **禁止 IAT 修复失败后静态死磕**：记 `E-iat-repair-fail` 后转动态；禁止 64 位样本只用 ImportREC
-- 不要把网页 JS 逆向误导到这个 skill；那是 `reverse-engineering` 的范围
+- Do not treat `radare2` as a tool with only one command, `aaa`
+- Do not open a user file in write mode without stating the risks
+- Do not draw conclusions before basic recon is done
+- **Skipping the import table check is forbidden** (`rabin2 -i` / recon imports): without writing Evidence, the next step is forbidden; when the user asks to redo the import table, doing other steps instead is forbidden
+- **Grinding statically after IAT repair failure is forbidden**: record `E-iat-repair-fail` then switch to dynamic; using only ImportREC for 64-bit samples is forbidden
+- Do not misdirect web JS reversing to this skill; that is `reverse-engineering`'s scope
 
-## 参考资料
+## References
 
-- 命令速查：`references/cheatsheet.md`
-- 标准侦察脚本：`scripts/recon.ps1`
+- Command cheatsheet: `references/cheatsheet.md`
+- Standard recon script: `scripts/recon.ps1`
 
-## radare2-skills 生态
+## radare2-skills Ecosystem
 
-radare2-skills 项目（radareorg/radare2-skills）提供了更完整的生态工具和工作流：
+The radare2-skills project (radareorg/radare2-skills) provides a more complete ecosystem of tools and workflows:
 
-- **r2xsql**：SQL 查询二进制导入表 / 字符串 / 函数
-- **r2mcp / r2http**：MCP 工具与 HTTP 状态化命令通道
-- **radius2**：符号执行、符号动态分析
-- **r2pm**：插件管理、扩展
-- **decompiler plugins**：radare2 插件机制
+- **r2xsql**: query binary imports / strings / functions with SQL
+- **r2mcp / r2http**: MCP tools and a stateful HTTP command channel
+- **radius2**: symbolic execution, symbolic dynamic analysis
+- **r2pm**: plugin management, extensions
+- **decompiler plugins**: the radare2 plugin mechanism
 
-**使用策略**：
-- 当用户提到 `r2xsql`、`r2mcp`、`r2http`、`radius2`、`r2pm`、`rabin2`、`rasm2`、`radiff2`、`rahash2`、`rax2` 时，优先路由到本 skill（radare2/SKILL.md）
-- 这些工具只是生态加速器，**不能绕过**：授权门禁、`tool-index` 校验、Evidence 导入、写模式确认
-- 给出最小可复现命令示例：
+**Usage strategy**:
+- When the user mentions `r2xsql`, `r2mcp`, `r2http`, `radius2`, `r2pm`, `rabin2`, `rasm2`, `radiff2`, `rahash2`, `rax2`, prefer routing to this skill (radare2/SKILL.md)
+- These tools are only ecosystem accelerators and **cannot bypass**: the authorization gate, `tool-index` validation, Evidence import, write-mode confirmation
+- Provide minimal reproducible command examples:
   - `r2xsql -s <file> -q "SELECT ..."`
   - `curl.exe -sS --data-binary 'aaa' http://127.0.0.1:9393/cmd`
   - `radius2 -p <binary> ...`
   - `r2pm -ci <plugin>`
 
-本 skill 保持原有硬门禁和证据链完整性，不允许跳过任何授权或 Evidence 步骤。
+This skill keeps the original hard gates and evidence chain integrity; skipping any authorization or Evidence step is not allowed.
 
 ---
 
-## 路由上下文
+## Routing Context
 
-**上游入口**: `skills/SKILL.md`（总控）、`routing.md`
-**上游备选**: `ida-reverse/`（需要反编译/伪代码时升级到 IDA）
-**下游出口**:
-- 需动态分析 → `reverse-engineering/tools-dynamic.md`（Frida/GDB）
-- 需深度反编译 → `ida-reverse/`
-- PAT 发现有趣字符串后需交叉引用 → `ida-reverse/`（IDA 的 xref 更强大）
+**Upstream entry**: `skills/SKILL.md` (master control), `routing.md`
+**Upstream alternative**: `ida-reverse/` (upgrade to IDA when decompilation/pseudocode is needed)
+**Downstream exits**:
+- Need dynamic analysis → `reverse-engineering/tools-dynamic.md` (Frida/GDB)
+- Need deep decompilation → `ida-reverse/`
+- Need cross-references after PAT finds interesting strings → `ida-reverse/` (IDA's xref is more powerful)
 
-**同级关联模块**: `ida-reverse/`（互补：r2 侦察快，IDA 反编译深）
+**Sibling related module**: `ida-reverse/` (complementary: r2 recon is fast, IDA decompilation is deep)
 
-## 按需自举（On-Demand Bootstrap）
+## On-Demand Bootstrap
 
-本 skill 的入口脚本已接入统一自举系统。缺少 radare2 时不会直接报错，而是自动尝试安装。
+This skill's entry scripts are wired into the unified bootstrap system. When radare2 is missing, it does not error out directly but automatically attempts installation.
 
-### 自动化能力边界
+### Automation Capability Boundaries
 
-| 工具 | 可自动安装 | 安装方式 | 说明 |
+| Tool | Auto-installable | Install method | Notes |
 |------|-----------|---------|------|
-| r2 | ✓ | GitHub Release ZIP (w64) | 自动下载解压到 `%USERPROFILE%\Tools\radare2\` |
-| rabin2 | ✓ | 同上（包含在 radare2 发行包中） | — |
-| rasm2 | ✓ | 同上 | — |
-| radiff2 | ✓ | 同上 | — |
-| rahash2 | ✓ | 同上 | — |
-| rax2 | ✓ | 同上 | — |
+| r2 | ✓ | GitHub Release ZIP (w64) | auto-downloads and extracts to `%USERPROFILE%\Tools\radare2\` |
+| rabin2 | ✓ | Same as above (included in the radare2 release package) | — |
+| rasm2 | ✓ | Same as above | — |
+| radiff2 | ✓ | Same as above | — |
+| rahash2 | ✓ | Same as above | — |
+| rax2 | ✓ | Same as above | — |
 
-### 自举触发点
+### Bootstrap Trigger Points
 
-- `scripts/recon.ps1`：缺 `rabin2` 或 `r2` 时自动调用 `bootstrap-reverse.ps1`
+- `scripts/recon.ps1`: automatically calls `bootstrap-reverse.ps1` when `rabin2` or `r2` is missing
 
-### 自举失败时
+### When Bootstrap Fails
 
-如果自动安装失败（网络不通、GitHub API 限流等），脚本会抛出明确错误并附带手动安装链接。
+If automatic installation fails (network unreachable, GitHub API rate-limited, etc.), the script throws a clear error with manual installation links attached.
 
-手动安装：从 https://github.com/radareorg/radare2/releases 下载 `radare2-*-w64.zip`，解压到 `%USERPROFILE%\Tools\radare2\` 并确保 `bin\` 目录在 PATH 中。
+Manual installation: download `radare2-*-w64.zip` from https://github.com/radareorg/radare2/releases, extract to `%USERPROFILE%\Tools\radare2\`, and ensure the `bin\` directory is on PATH.
 
 
-## 任务完成自检（声称完成前 MUST 通过）
+## Task Completion Self-Check (MUST pass before claiming completion)
 
-- [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
-- [ ] 导入表检查是否已执行且写入 Evidence（E-imports / E-triage-imports 或 .NET 等价）？DLL/SYS 是否含 E-exports？
-- [ ] IAT 修复失败是否记录 E-iat-repair-fail 并转动态？重做请求是否回到同一步？
-- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
-- [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
-- [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？
+- [ ] Did I execute every step of the workflow (rather than just reading)?
+- [ ] Was the import table check executed and written into Evidence (E-imports / E-triage-imports or .NET equivalent)? Do DLL/SYS include E-exports?
+- [ ] Was IAT repair failure recorded as E-iat-repair-fail and switched to dynamic? Did redo requests return to the same step?
+- [ ] Did I use real tool paths based on `tool-index`?
+- [ ] Did I produce reproducible evidence (commands/scripts/screenshots/report)?
+- [ ] Did I complete and write back the Checklist items required by RULES?

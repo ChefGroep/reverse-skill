@@ -1,8 +1,8 @@
-# 邮件认证清单
+# Email Authentication Checklist
 
-- [ ] SPF 记录与 -all/~all  
-- [ ] DKIM 选择器有效  
-- [ ] DMARC p= 与 rua  
-- [ ] 对齐（relaxed/strict）  
-- [ ] 显示名仿冒与回复地址  
-- [ ] 外发网关与中继  
+- [ ] SPF record with -all/~all  
+- [ ] DKIM selectors valid  
+- [ ] DMARC p= and rua  
+- [ ] Alignment (relaxed/strict)  
+- [ ] Display-name spoofing and reply-to addresses  
+- [ ] Outbound gateway and relay  

@@ -1,62 +1,62 @@
-# reverse-skill 身份宣言（相对 Z3r0）
+# reverse-skill Identity Declaration (relative to Z3r0)
 
-> 本文件固定 **我们是谁**。吸收 Z3r0 的证据/范围/分工/时间线思想，但 **不** 做成 Z3r0 平台。
+> This document pins down **who we are**. We absorb Z3r0's evidence/scope/role-division/timeline ideas, but we are **not** a Z3r0 platform.
 
-## 我们是
+## We Are
 
-| 维度 | reverse-skill |
+| Dimension | reverse-skill |
 |------|----------------|
-| 形态 | **Skill 路由包** — 给任意 AI 客户端（Claude/Cursor/Codex…）用的方法论 + 工具自举 |
-| 入口 | `RULES.md` → `MASTER-ROUTING` / `master-route.ps1` → 子 skill |
-| 工具真相 | `tool-index.md` + `bootstrap-manifest.json`（本机路径，不猜） |
-| 进化 | `field-journal/` 脱敏经验回写 |
-| 产物 | Markdown 报告 + `work/<case>/` 本地作战目录（gitignore） |
-| 部署 | `git clone` 即可；无强制 PG/UI/Docker 池 |
+| Form | **Skill routing package** — methodology + tool bootstrap for any AI client (Claude/Cursor/Codex…) |
+| Entry | `RULES.md` → `MASTER-ROUTING` / `master-route.ps1` → sub-skills |
+| Tool truth | `tool-index.md` + `bootstrap-manifest.json` (local paths, never guessed) |
+| Evolution | `field-journal/` anonymized experience write-back |
+| Deliverables | Markdown reports + `work/<case>/` local working directories (gitignored) |
+| Deployment | A `git clone` is enough; no mandatory PG/UI/Docker pool |
 
-## 我们不是
+## We Are Not
 
-| Z3r0 有 | reverse-skill **故意不做** |
+| Z3r0 has | reverse-skill **deliberately skips** |
 |---------|---------------------------|
-| React 作战台 | ❌ |
-| FastAPI 控制面 + WebSocket 会话 | ❌ |
-| PostgreSQL 证据库 | ❌ |
-| LightRAG 服务 | ❌ |
-| Docker 主机池 / noVNC 控制代理 | ❌（可 **文档** 推荐可选沙箱 profile） |
-| 多 Agent 进程运行时 | ❌（仅 **角色→skill 映射 + 交接协议**） |
+| React operations console | ❌ |
+| FastAPI control plane + WebSocket sessions | ❌ |
+| PostgreSQL evidence store | ❌ |
+| LightRAG service | ❌ |
+| Docker host pool / noVNC control proxy | ❌ (but we **document** an optional sandbox profile) |
+| Multi-agent process runtime | ❌ (only **role→skill mapping + handoff protocol**) |
 
-## 我们从 Z3r0 学什么（缩水落地）
+## What We Learn from Z3r0 (slimmed-down implementation)
 
-| 思想 | reverse-skill 形态 |
+| Idea | reverse-skill shape |
 |------|-------------------|
-| 授权与项目边界 | `ops/scope-contract.md` → 每案 `scope.md` |
-| Evidence→Finding→Path | `ops/evidence-finding-path.md` + 报告模板 |
-| 专家分工 | `ops/role-map.md`（Lead/cie/cpe/cre…→ skill） |
-| 可回放 | `work/<case>/timeline.md` 追加写 |
-| WorkItem/覆盖 | `workitems.md` + coverage 勾选 |
-| 沙箱工具齐 | `ops/sandbox-profile.md` vs bootstrap-manifest |
-| 出站管控 | `network_profile` 字段（offline/lab/authorized） |
+| Authorization and case boundary | `ops/scope-contract.md` → per-case `scope.md` |
+| Evidence→Finding→Path | `ops/evidence-finding-path.md` + report templates |
+| Specialist division of labor | `ops/role-map.md` (Lead/cie/cpe/cre…→ skill) |
+| Replayability | `work/<case>/timeline.md` append-only writing |
+| WorkItem/coverage | `workitems.md` + coverage checkboxes |
+| Sandbox tool parity | `ops/sandbox-profile.md` vs bootstrap-manifest |
+| Egress control | `network_profile` field (offline/lab/authorized) |
 
-## 特色（必须保留）
+## Signature Features (must be kept)
 
-1. **三轴路由 + PRIMARY 快路径**（目标类型 / 意图 / 工具链）  
-2. **bootstrap 按需装工具**，跨 Windows/Kali/Linux/macOS  
-3. **MCP 友好**（IDA/Burp/jshook/anything-analyzer）  
-4. **field-journal 脱敏进化**  
-5. **服从性工程**：ACTION REQUIRED / 完成自检 / 禁止假停  
+1. **Three-axis routing + PRIMARY fast path** (target type / intent / toolchain)  
+2. **Bootstrap installs tools on demand**, across Windows/Kali/Linux/macOS  
+3. **MCP-friendly** (IDA/Burp/jshook/anything-analyzer)  
+4. **Anonymized field-journal evolution**  
+5. **Compliance engineering**: ACTION REQUIRED / completion self-check / no fake stops
 
-## 与 Z3r0 的健康关系
+## Healthy Relationship with Z3r0
 
 ```text
-Z3r0 = 红队操作系统 / 团队协作平台
-reverse-skill = Agent 的安全作业路由器 + 说明书
+Z3r0 = red-team operating system / team collaboration platform
+reverse-skill = the agent's security-work router + instruction manual
 
-可选未来：把本包 skill 内容挂进 Z3r0 sandbox-local skills
-当前：零依赖 Z3r0 安装即可完整工作
+Optional future: mount this package's skill content into Z3r0 sandbox-local skills
+Today: this package works fully with zero dependency on Z3r0
 ```
 
-## 与「800+ 社区微 skill」的关系
+## Relationship with "800+ community micro-skills"
 
-- **不** submodule 巨型 skill 库（投毒面与维护成本，见 `skill-supply-chain.md`）  
-- **要** 维护 `references/community-security-skills.md` 作索引与借鉴规则  
-- **要** 用 `domain-coverage-map.md` 证明：深度 skill + 路由 > 碎片 skill 堆叠  
-- 外部 skill 安装：AST10 思维 + 只信 curated 源（如 Trail of Bits curated）  
+- **Do not** submodule a giant skill library (poisoning surface and maintenance cost, see `skill-supply-chain.md`)  
+- **Do** maintain `references/community-security-skills.md` as index and borrowing rules  
+- **Do** use `domain-coverage-map.md` to prove: deep skills + routing > fragmented skill stacking  
+- External skill installation: AST10 mindset + trust curated sources only (e.g. Trail of Bits curated)

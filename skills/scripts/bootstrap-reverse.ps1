@@ -1,4 +1,4 @@
-﻿#requires -Version 5
+#requires -Version 5
 
 [CmdletBinding()]
 param(
@@ -13,7 +13,7 @@ param(
     [string]$McpHostTarget = 'None'
 )
 
-# 临时目录统一入口（$env:TEMP 在 Linux/macOS 上可能未设置）
+# Unified temp-dir entry ($env:TEMP may be unset on Linux/macOS)
 $tmpBase = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
 
 Set-StrictMode -Version Latest

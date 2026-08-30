@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 # Lightweight scope gate before ACT. Exit 0 = ok, 2 = not ready, 1 = usage/error.
 # Usage:
 #   powershell -File skills/scripts/case-guard.ps1 -CaseRoot work\my-case
@@ -60,8 +60,8 @@ if ([string]::IsNullOrWhiteSpace($netMode)) {
 } elseif ($netMode -notin $allowedNetworkModes) {
     [void]$issues.Add("network_profile.mode is unsupported: $netMode")
 } elseif ($netMode -eq 'offline') {
-    # offline is only OK if sample path mentioned in assets/notes — soft note
-    if ($scope -notmatch 'sample|offline.?path|本地.?样本|\.apk\b|\.bin\b|\.exe\b') {
+    # offline is only OK if a local/offline sample is referenced in assets/notes — soft cue check
+    if ($scope -notmatch 'sample|offline.?path|local.?sample|\.apk\b|\.bin\b|\.exe\b') {
         [void]$issues.Add('network_profile.mode is offline without offline sample cue')
     }
 }

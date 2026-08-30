@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$OutputMarkdown,
     [string]$OutputJson
@@ -74,14 +74,14 @@ $reports = @(Get-ReverseToolReport | Where-Object {
 $generatedAt = Get-Date -Format 'yyyy-MM-dd HH:mm:ss K'
 
 $markdownLines = @(
-    '# 逆向工具索引',
+    '# Reverse Tool Index',
     '',
-    "- 扫描时间: $generatedAt",
-    '- 路由入口: `SKILL.md` → `routing.md` → 对应子 skill',
-    '- 说明: 本表由 `skills/scripts/refresh-tool-index.ps1` 自动生成，用于各 Agent 客户端的路由和工具路径确认。',
-    '- 注意: MCP-only 能力的工具可用性与运行时分开计算；`npx` 只代表 npm MCP 的运行条件，不能单独让 jshookmcp / reqable-mcp 变成可用或 Ready。',
+    "- Scan time: $generatedAt",
+    '- Routing entry: `SKILL.md` → `routing.md` → the matching sub-skill',
+    '- Note: this table is generated automatically by `skills/scripts/refresh-tool-index.ps1` for routing and tool-path confirmation by agent clients.',
+    '- Caution: tool availability of MCP-only capabilities is computed separately from runtime; `npx` only represents the npm MCP runtime condition and does not by itself make jshookmcp / reqable-mcp available or Ready.',
     '',
-    '| 工具 | 归属 skill | 作用 | 可用 | 路径 | 版本 | 来源 | 脚本引用 |',
+    '| Tool | Skill | Purpose | Available | Path | Version | Source | Script refs |',
     '|---|---|---|---|---|---|---|---|'
 )
 
@@ -132,9 +132,9 @@ $markdownCapLines = @(
     '',
     '---',
     '',
-    '## 能力状态视图 (Capability Status)',
+    '## Capability Status',
     '',
-    '| 能力 | 工具可用 | Ready | MCP 已注册 | 服务在线 | MCP HTTP | 可自动安装 | 安装方式 |',
+    '| Capability | Tool Available | Ready | MCP Registered | Service Online | MCP HTTP | Auto-install | Install Method |',
     '|------|---------|-------|-----------|---------|-----------|---------|'
 )
 foreach ($cap in $capabilityRows) {
@@ -148,7 +148,7 @@ foreach ($cap in $capabilityRows) {
     $markdownCapLines += "| $($cap.name) | $toolText | $readyText | $mcpText | $svcText | $mcpHttpText | $autoText | $kindText |"
 }
 $markdownCapLines += ''
-$markdownCapLines += '> ✓ = 是 | ✗ = 否 | — = 不适用或未检测'
+$markdownCapLines += '> ✓ = yes | ✗ = no | — = not applicable or not detected'
 $markdownCapLines += ''
 
 $capContent = ($markdownCapLines -join [Environment]::NewLine)

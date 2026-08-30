@@ -11,36 +11,38 @@ description: |
 
 # linux-privesc
 
-Linux privilege-escalatie skill voor geautoriseerde audits en eigen lab-omgevingen.
-Focus: systematische enumeratie → quick wins → kernel → container → bewijs.
+Linux privilege-escalation skill for authorized audits and your own lab environments.
+Focus: systematic enumeration → quick wins → kernel → container → evidence.
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (execute immediately after reading)
 
-1. `NOW`: bevestig autorisatie — bij levende systemen moet `work/<case>/scope.md`
-   `auth.status=granted` hebben (`../ops/scope-contract.md`). Zonder grant alleen
-   enumeratie-opdrachten rapporteren die je wél mag draaien, niets uitvoeren.
-2. `NOW`: check dat deze skill de juiste is — Windows/AD-escalatie hoort bij
-   `../windows-ad/SKILL.md`, containers-als-doelstelsel bij `../cloud-k8s/SKILL.md`.
-3. `NEXT`: lees `../tool-index.md` voor echte tool-paden (find/sudo/getcap/docker/python3/gcc).
-4. `NEXT`: ontbrekende tool → bootstrap (`../scripts/bootstrap-reverse.sh`), nooit paden gokken.
-5. `ACT`: start Fase 1 hieronder; niet blijven hangen in bevestigingsmodus.
+1. `NOW`: confirm authorization — on live systems `work/<case>/scope.md` must have
+   `auth.status=granted` (`../ops/scope-contract.md`), backed by a signed Rules of
+   Engagement under the Dutch Computer Crime Act III (Wet computercriminaliteit III).
+   Without a grant, only report the enumeration commands you ARE allowed to run;
+   execute nothing.
+2. `NOW`: check that this skill is the right one — Windows/AD escalation belongs to
+   `../windows-ad/SKILL.md`, containers-as-target-system to `../cloud-k8s/SKILL.md`.
+3. `NEXT`: read `../tool-index.md` for real tool paths (find/sudo/getcap/docker/python3/gcc).
+4. `NEXT`: missing tool → bootstrap (`../scripts/bootstrap-reverse.sh`), never guess paths.
+5. `ACT`: start Phase 1 below; do not linger in confirmation mode.
 
-## Toepassingsgebied
+## Scope
 
-- Geautoriseerde privesc-audit op eigen hosts, lab-VM's, CTF-boxen, containers.
-- Post-exploitatie-analyse binnen een geautoriseerde attack-chain (ket met `../attack-chain/SKILL.md`).
-- Hardening-review: aantonen dát een route bestaat (bewijs), zonder hem op subject-infra uit te voeren.
+- Authorized privesc audit on your own hosts, lab VMs, CTF boxes, containers.
+- Post-exploitation analysis inside an authorized attack chain (chained with `../attack-chain/SKILL.md`).
+- Hardening review: prove THAT a route exists (evidence), without running it on subject infrastructure.
 
-Hard grens: subject-/derden-systemen zonder schriftelijke grant → alleen de
-enumeratie-opdrachten en verwachte resultaten documenteren; GEEN uitvoering.
+Hard boundary: subject/third-party systems without a written grant → document only
+the enumeration commands and expected results; NO execution.
 
-## Werkwijze
+## Workflow
 
-### Fase 1 — Basisenumeratie (geen root nodig)
+### Phase 1 — Basic enumeration (no root required)
 
 ```bash
 id; uname -a; cat /etc/os-release
-sudo -n -l 2>/dev/null || echo "sudo vraagt wachtwoord"
+sudo -n -l 2>/dev/null || echo "sudo prompts for a password"
 find / -xdev \( -perm -4000 -o -perm -2000 \) -type f 2>/dev/null | sort
 getcap -r / 2>/dev/null
 crontab -l 2>/dev/null; ls -la /etc/cron* /var/spool/cron 2>/dev/null
@@ -51,41 +53,41 @@ echo "$PATH"; env | grep -iE 'token|key|secret|pass'
 ls -la /var/backups/ /opt/ /home/ 2>/dev/null
 ```
 
-Elke finding direct als evidence vastleggen (command + raw output),
-zie `../ops/evidence-finding-path.md`.
+Record every finding immediately as evidence (command + raw output),
+see `../ops/evidence-finding-path.md`.
 
-### Fase 2 — Quick wins (match op GTFOBins)
+### Phase 2 — Quick wins (match on GTFOBins)
 
-- **SUID/SGID-binary**: zoek elk binary-pad op gtfobins.github.io → sectie SUID;
-  klassiekers: `env`, `find`, `vim`, `bash`, `less`, `cp`, `python3`, `openssl`.
-- **sudo -l regels**: wildcards (`sudo less /var/log/*` → `!/bin/sh` in file),
-  `env_keep+LD_PRELOAD`, `sudoedit` op bestanden met shell-metachars,
-  `NOPASSWD` op scripts met `curl|tar|cp` (GTFOBins sudo-sectie).
-- **Capabilities**: `cap_setuid` op python/perl/openssl → uid 0 one-liner;
-  `cap_dac_read_search` → lees elk bestand.
-- **Cron**: scripts die root draait en door jou beschrijfbaar zijn; wildcard-abuse
-  (`tar --checkpoint` bij `tar cf *`); `PATH=`-hijack in cron-scripts zonder absolute paden.
-- **Writable /etc/passwd** (via andere bug): `openssl passwd -1` + regel toevoegen.
-- **Groepslidmaatschap**: `docker` → `docker run -v /:/host -it alpine`;
-  `lxd`/`disk` → gelijkwaardige escape-paden; `snap` → snapcraft-poisoning.
-- **NFS** `no_root_squash` in `/etc/exports` → setuid-binary vanaf client.
+- **SUID/SGID binary**: look up each binary path on gtfobins.github.io → SUID section;
+  classics: `env`, `find`, `vim`, `bash`, `less`, `cp`, `python3`, `openssl`.
+- **sudo -l rules**: wildcards (`sudo less /var/log/*` → `!/bin/sh` in file),
+  `env_keep+LD_PRELOAD`, `sudoedit` on files with shell metacharacters,
+  `NOPASSWD` on scripts using `curl|tar|cp` (GTFOBins sudo section).
+- **Capabilities**: `cap_setuid` on python/perl/openssl → uid 0 one-liner;
+  `cap_dac_read_search` → read any file.
+- **Cron**: scripts running as root that you can write to; wildcard abuse
+  (`tar --checkpoint` with `tar cf *`); `PATH=`-hijack in cron scripts without absolute paths.
+- **Writable /etc/passwd** (via another bug): `openssl passwd -1` + append a line.
+- **Group membership**: `docker` → `docker run -v /:/host -it alpine`;
+  `lxd`/`disk` → equivalent escape paths; `snap` → snapcraft poisoning.
+- **NFS** `no_root_squash` in `/etc/exports` → setuid binary from the client.
 
-### Fase 3 — Kernel-exploits
+### Phase 3 — Kernel exploits
 
-Kernel-versie exact matchen; kandidaten pas na verificatie draaien (eigen host/lab):
+Match the kernel version exactly; run candidates only after verification (own host/lab):
 
-| Kernel-bereik | Kandidaat |
+| Kernel range | Candidate |
 |---|---|
 | 5.8 – 5.16.10 | Dirty Pipe (CVE-2022-0847) |
-| ≤ 5.10.22 / ≤ 5.11 (oude) | PwnKit (CVE-2021-4034, polkit pkexec) |
-| 5.8 – 5.10 | OverlayFS (CVE-2021-3493, Ubuntu-specifiek) |
+| ≤ 5.10.22 / ≤ 5.11 (older) | PwnKit (CVE-2021-4034, polkit pkexec) |
+| 5.8 – 5.10 | OverlayFS (CVE-2021-3493, Ubuntu-specific) |
 | ≤ 4.8.3 | Dirty COW (CVE-2016-5195) |
-| 5.14+ met io_uring | check io_uring-CVE-per-versie |
-| 5.15+ | DirtyFIFO / DirtyPipe-varianten checken |
+| 5.14+ with io_uring | check io_uring CVEs per version |
+| 5.15+ | check DirtyFIFO / DirtyPipe variants |
 
-Exploit-bron alleen uit eigen mirror of schone upstream; sha256 verifiëren vóór build.
+Exploit source only from your own mirror or a clean upstream; verify the sha256 before building.
 
-### Fase 4 — Container-escape (indien in container)
+### Phase 4 — Container escape (if inside a container)
 
 ```bash
 cat /proc/1/cgroup; ls -la /.dockerenv 2>/dev/null
@@ -94,32 +96,32 @@ mount | grep -E 'docker|overlay|kube'
 ls -la /var/run/secrets/kubernetes.io/ 2>/dev/null
 ```
 
-- Privileged container → `fdisk -l`, host-blockdevice mounten.
-- `cap_sys_admin` → mount host-root; `cap_sys_ptrace` → host-proc injecteren.
-- Docker-socket gemount → `docker run -v /:/host`.
-- runc ≤ 1.0-rc6 (CVE-2019-5736) → alleen vermelden als finding, niet blind draaien.
-- k8s ServiceAccount-token → rolcheck, escalation-pad rapporteren.
+- Privileged container → `fdisk -l`, mount the host block device.
+- `cap_sys_admin` → mount host root; `cap_sys_ptrace` → inject into host proc.
+- Docker socket mounted → `docker run -v /:/host`.
+- runc ≤ 1.0-rc6 (CVE-2019-5736) → report as a finding only; do not run blindly.
+- k8s ServiceAccount token → check the role, report the escalation path.
 
-### Fase 5 — Rapportage
+### Phase 5 — Reporting
 
-- Per route: Finding (titel + CVSS-richting), Evidence-commando's, Impact, Fix
-  (least privilege, sudoers-streng, SUID-schrub, kernel-patch).
-- Timeline/workitems bijhouden (`../ops/timeline-workitem.md`).
-- Exploitatie alleen tot bewijs (id=0 + een bestandsaantasting-markering),
-  daarna terugdraaien wat terugdraaibaar is.
+- Per route: Finding (title + CVSS direction), Evidence commands, Impact, Fix
+  (least privilege, stricter sudoers, SUID scrub, kernel patch).
+- Keep the timeline/workitems up to date (`../ops/timeline-workitem.md`).
+- Exploit only until proof (id=0 + one file-tampering marker),
+  then roll back whatever can be rolled back.
 
-## Toolmatrix (Linux)
+## Tool Matrix (Linux)
 
-| Tool | Gebruik | Beschikbaar via |
+| Tool | Use | Available via |
 |---|---|---|
-| find/sudo/getcap/capsh | enumeratie | basissysteem |
-| docker | group-escape | apt `docker.io` |
-| python3/gcc | exploit-build | apt |
-| linpeas/pspy | optioneel diep-enum | eigen mirror, offline draaien |
+| find/sudo/getcap/capsh | enumeration | base system |
+| docker | group escape | apt `docker.io` |
+| python3/gcc | exploit build | apt |
+| linpeas/pspy | optional deep enum | own mirror, run offline |
 
-## Grenzen
+## Boundaries
 
-- Geen uitvoering op derden-systemen zonder `auth.status=granted`.
-- Kernel-exploits kunnen host destabiliseren — alleen op eigen lab, en bij
-  subject-hosts de versie-finding met exploit-candidaat als bewijs laten staan.
-- Persistence-aanbevelingen rapporteren (cron/SSH-key), nooit zelf plaatsen buiten mandaat.
+- No execution on third-party systems without `auth.status=granted`.
+- Kernel exploits can destabilize a host — own lab only; on subject hosts leave the
+  version finding plus the exploit candidate in place as evidence.
+- Report persistence recommendations (cron/SSH key); never place them yourself outside your mandate.

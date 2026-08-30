@@ -1,39 +1,39 @@
-# examples/ctf-demo — 完整流程示例
+# examples/ctf-demo — Full workflow example
 
-> 本目录演示 reverse-skill 的标准作业流：**路由 → 授权门禁 → 时间线 → 证据链 → 报告**。
-> 内容为虚构示例（CTF 靶场），仅用于展示工作方式。
+> This directory demonstrates the reverse-skill standard operating flow: **routing → authorization gate → timeline → evidence chain → report**.
+> The content is a fictional example (CTF lab range), only to show how the workflow operates.
 
-## 流程演示
+## Flow demonstration
 
 ```text
-1. 用户任务："分析这个 CTF pwn 题，栈溢出 gets"
-2. 路由：master-route.ps1 -Hint "CTF pwn 栈溢出" → PRIMARY R17 (pwn-chain)
-3. 授权：case-init.ps1 -Hint ... -CaseName ctf-demo -AuthGranted → scope.md
-4. 执行：时间线追加 + 证据 E-001/E-002 + workitems 更新
-5. 产出：报告（docs-generator）+ field-journal 脱敏沉淀
+1. User task: "Analyze this CTF pwn challenge, stack overflow via gets"
+2. Routing: master-route.ps1 -Hint "CTF pwn stack overflow" → PRIMARY R17 (pwn-chain)
+3. Authorization: case-init.ps1 -Hint ... -CaseName ctf-demo -AuthGranted → scope.md
+4. Execute: timeline appends + evidence E-001/E-002 + workitems updates
+5. Output: report (docs-generator) + sanitized field-journal deposit
 ```
 
-## 文件
+## Files
 
-| 文件 | 说明 |
+| File | Description |
 |------|------|
-| `scope.md` | 案例范围（auth granted / 目标 / network_profile） |
-| `timeline.md` | 追加式时间线 |
-| `workitems.md` | 工作项与覆盖率 |
-| `evidence/` | 证据记录示例（E-001 复现命令、E-002 崩溃输出） |
-| `report/` | 最终报告结构示例 |
+| `scope.md` | Case scope (auth granted / target / network_profile) |
+| `timeline.md` | Append-only timeline |
+| `workitems.md` | Work items and coverage |
+| `evidence/` | Evidence record examples (E-001 reproduction command, E-002 crash output) |
+| `report/` | Final report structure example |
 
-## 真实使用
+## Real usage
 
 ```powershell
-# 初始化真实 case（授权目标）
+# Initialize a real case (authorized target)
 powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/case-init.ps1 `
-  -Hint "你的任务" -CaseName my-case -AuthGranted -TargetUrl "https://target/" `
+  -Hint "your task" -CaseName my-case -AuthGranted -TargetUrl "https://target/" `
   -NetworkProfile authorized_target_only
 
-# 追加证据
+# Append evidence
 powershell -File skills/scripts/append-evidence.ps1 -CaseRoot work\my-case `
   -Id E-001 -Title "..." -ReproCommand "..."
 ```
 
-> 注意：真实 case 应放在 `work/<case>/`（gitignored，防泄密）；本示例目录保留在 git 中供参考。
+> Note: real cases belong in `work/<case>/` (gitignored, to prevent leaks); this example directory stays in git for reference.

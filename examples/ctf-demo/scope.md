@@ -8,12 +8,12 @@
 - primary_id: R17
 - lead_role: lead
 - specialist_roles: [pwn-specialist]
-- hint: CTF pwn 栈溢出 gets
+- hint: CTF pwn stack overflow via gets
 
 ## auth
 - status: granted
-- basis: ctf_lab (CTF 靶场授权)
-- evidence_of_auth: 平台授权条款（靶场挑战自带授权）
+- basis: ctf_lab (CTF lab-range authorization)
+- evidence_of_auth: Platform terms of authorization (the lab challenge itself grants it)
 - MUST NOT proceed if status != granted
 
 ## in_scope
@@ -23,7 +23,7 @@
 - activities: [static analysis, exploit development, remote verification]
 
 ## out_of_scope
-- assets: [其他挑战、平台基础设施]
+- assets: [other challenges, platform infrastructure]
 - activities: [dos, phishing_real_users, unrestricted_exfil]
 
 ## network_profile

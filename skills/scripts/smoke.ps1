@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 # reverse-skill smoke entrypoint: verify + script parse + master-route sample matrix.
 # Usage:
 #   powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
@@ -127,9 +127,9 @@ $cases = @(
     @{ Name = 'ida'; Hint = 'IDA decompile PE binary disassemble'; Expect = 'ida-reverse' },
     @{ Name = 'pentest'; Hint = 'nmap nuclei sqlmap ffuf pentest bug bounty'; Expect = 'pentest-tools' },
     @{ Name = 'llm'; Hint = 'LLM prompt inject jailbreak agent security garak'; Expect = 'llm-security' },
-    @{ Name = 'zh-apk'; Hint = '安卓 APK 加固 反编译'; Expect = 'apk-reverse' },
-    @{ Name = 'zh-pentest'; Hint = '渗透测试 端口扫描 SQL注入'; Expect = 'pentest-tools' },
-    @{ Name = 'zh-js'; Hint = '前端签名 JS逆向 加密参数'; Expect = 'js-reverse' },
+    @{ Name = 'eu-apk'; Hint = 'Android APK hardening decompile jadx smali'; Expect = 'apk-reverse' },
+    @{ Name = 'eu-pentest'; Hint = 'pentest port scan SQL injection nuclei'; Expect = 'pentest-tools' },
+    @{ Name = 'eu-js'; Hint = 'frontend sign JS reverse encrypted param'; Expect = 'js-reverse' },
     @{ Name = 'evidence'; Hint = 'case review evidence chain traceability'; Expect = 'case-review' }
 )
 $routeOk = 0

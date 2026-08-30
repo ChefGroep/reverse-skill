@@ -1,6 +1,6 @@
-# 无线实验规则
+# Wireless Lab Rules
 
-1. 仅授权 SSID/BSSID  
-2. 发射功率与频道遵守当地法规  
-3. 优先屏蔽室/实验 AP  
-4. 证据中打码真实客户 MAC（若报告外传）  
+1. Authorized SSIDs/BSSIDs only  
+2. Transmit power and channels must comply with local regulations (NL: Agentschap Telecom)  
+3. Prefer shielded rooms / lab APs  
+4. Mask real client MACs in evidence (when the report leaves the lab)  

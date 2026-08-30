@@ -1,8 +1,8 @@
-﻿#Requires -Version 5.1
+#Requires -Version 5.1
 # reverse-skill PRIMARY router.
-# 规则单一事实源：skills/config/routing.json（勿在本脚本内硬编码路由表）。
-# CLI 兼容旧版：-Hint / -OutDir；输出 route-scope.md；退出码 0 成功 / 2 配置或技能缺失。
-# 读取 UTF-8 BOM 源以保证 Windows PowerShell 5.1 下 CJK 正常。
+# Single source of truth for rules: skills/config/routing.json (never hardcode the routing table in this script).
+# CLI compatible with the legacy version: -Hint / -OutDir; writes route-scope.md; exit code 0 success / 2 config or skill missing.
+# Reads UTF-8 sources (BOM tolerated) so CJK input stays intact under Windows PowerShell 5.1.
 param(
     [string] $Hint = '',
     [string] $OutDir = '',
@@ -19,7 +19,7 @@ $skillsRoot = Split-Path -Parent $scriptDir
 $packageRoot = Split-Path -Parent $skillsRoot
 $configPath = Join-Path $skillsRoot 'config/routing.json'
 
-# --- 读取路由配置（单一事实源） ---
+# --- Load routing config (single source of truth) ---
 if (-not (Test-Path -LiteralPath $configPath)) {
     Write-Host ("ERROR: routing config missing: {0}" -f $configPath) -ForegroundColor Red
     Write-Host 'Restore skills/config/routing.json (git checkout / git pull) and retry.' -ForegroundColor Yellow
@@ -32,26 +32,26 @@ try {
     exit 2
 }
 
-# --- 规则匹配：每条 keyword 规则命中则计入候选集（与旧版逐条 if 行为一致） ---
+# --- Rule matching: every matching keyword rule enters the candidate set (same behavior as the legacy per-rule if chain) ---
 $sel = New-Object System.Collections.Generic.List[string]
 foreach ($route in $cfg.routes.PSObject.Properties) {
     $id = $route.Name
     foreach ($kw in $route.Value.keywords) {
         $hit = $false
         if ($null -ne $kw.must -and $t -match $kw.must) { $hit = $true }
-        # mustAll：全部子正则都匹配才成立
+        # mustAll: every sub-regex must match for the rule to fire
         if ($hit -and $null -ne $kw.mustAll) {
             foreach ($m in $kw.mustAll) {
                 if ($t -notmatch $m) { $hit = $false; break }
             }
         }
-        # exclude：命中则本条规则不触发（防误伤，如 越狱/LLM 语境、域控/攻击链）
+        # exclude: if it hits, this rule does not fire (guards against false positives such as jailbreak/LLM context or domain-controller/attack-chain wording)
         if ($hit -and $null -ne $kw.exclude -and $t -match $kw.exclude) { $hit = $false }
         if ($hit) { [void]$sel.Add($id) }
     }
 }
 
-# --- 计分：同 id 多规则命中则加分（与旧版一致） ---
+# --- Scoring: multiple matching rules for the same id add up (same as legacy) ---
 $scores = [ordered]@{}
 foreach ($item in $sel) {
     if (-not $scores.Contains($item)) { $scores[$item] = 0 }
@@ -61,7 +61,7 @@ foreach ($item in $sel) {
 $uniq = New-Object System.Collections.Generic.List[string]
 foreach ($d in $scores.Keys) { [void]$uniq.Add($d) }
 
-# --- priority 自检：路由表与 priority 必须一一对应，防新增路由漏加优先级 ---
+# --- priority self-check: routes and priority must map one-to-one so a newly added route cannot miss its priority ---
 $routeIds = @($cfg.routes.PSObject.Properties | ForEach-Object { $_.Name })
 $missingInPriority = @($routeIds | Where-Object { $_ -notin @($cfg.priority) })
 $extraInPriority = @($cfg.priority | Where-Object { $_ -notin $routeIds })
@@ -71,7 +71,7 @@ if ($missingInPriority.Count -gt 0 -or $extraInPriority.Count -gt 0) {
     if ($extraInPriority.Count -gt 0) { Write-Host ("  priority not in routes: {0}" -f ($extraInPriority -join ', ')) -ForegroundColor Yellow }
 }
 
-# --- 按 priority 顺序取分数最高者为 PRIMARY（并列时 priority 靠前者胜出） ---
+# --- PRIMARY = highest score in priority order (ties broken by earlier priority) ---
 $priority = @($cfg.priority)
 $fallbackId = $cfg.meta.fallbackId
 $primary = $null
@@ -96,13 +96,13 @@ if ($null -eq $primary) {
     $confidence = if ($uniq.Count -eq 1) { 'high' } else { 'medium' }
 }
 
-# 防御：priority 若含 routes 之外的幽灵 id（配置错误），回退到 fallback 而非崩溃
+# Defense: if priority contains a ghost id outside routes (config error), fall back instead of crashing
 if ($routeIds -notcontains $primary) {
     Write-Host ("WARN: primary id '{0}' not in routes; falling back to {1}" -f $primary, $fallbackId) -ForegroundColor Yellow
     $primary = $fallbackId
 }
 
-# 复用当前主线的项目工作根解析，避免把路由产物写进 skill 包。
+# Reuse the mainline project work-root resolution so routing output never lands inside the skill package.
 $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
 $skillsRoot = Split-Path -Parent $scriptDir
@@ -124,7 +124,7 @@ if (-not (Test-Path -LiteralPath $skillAbs)) {
     exit 2
 }
 
-# --- 输出目录（默认调用方项目 work\master-route-<ts>） ---
+# --- Output directory (defaults to the caller project work\master-route-<ts>) ---
 if ([string]::IsNullOrWhiteSpace($OutDir)) {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     if ($packageRoot -and (Test-Path -LiteralPath $packageRoot)) {
@@ -136,7 +136,7 @@ if ([string]::IsNullOrWhiteSpace($OutDir)) {
 }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
-# --- 写 route-scope.md（格式与旧版一致，下游脚本解析 primary_skill / primary） ---
+# --- Write route-scope.md (format identical to legacy; downstream scripts parse primary_skill / primary) ---
 $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine('# reverse-skill Master route (PRIMARY)')
 [void]$sb.AppendLine(("- created: {0}" -f (Get-Date -Format 'o')))

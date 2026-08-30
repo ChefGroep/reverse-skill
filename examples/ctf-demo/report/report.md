@@ -1,26 +1,26 @@
-# ctf-demo — Final Report (示例)
+# ctf-demo — Final Report (example)
 
-> 报告结构参考 `skills/docs-generator/references/security-report-templates.md`。
+> Report structure follows `skills/docs-generator/references/security-report-templates.md`.
 
-## 1. 概述
+## 1. Overview
 
-| 项 | 值 |
+| Item | Value |
 |----|----|
-| 目标 | pwn1 (https://ctf.example.com/challenges/pwn1) |
-| 类型 | CTF pwn（栈溢出） |
-| 结果 | ✅ flag captured |
-| 耗时 | ~1.5h |
+| Target | pwn1 (https://ctf.example.com/challenges/pwn1) |
+| Type | CTF pwn (stack overflow) |
+| Result | ✅ flag captured |
+| Duration | ~1.5h |
 
-## 2. 执行摘要
+## 2. Executive summary
 
-pwn1 为无 PIE/无 canary 的 64 位 ELF，main 使用 `gets()` 读取 0x40 缓冲区。
-通过 0x48 偏移覆盖返回地址，调用程序内 win 函数获取 flag。远程验证成功。
+pwn1 is a 64-bit ELF with no PIE and no canary; `main` reads into a 0x40 buffer with `gets()`.
+The return address is overwritten at offset 0x48 to call the in-program win function and capture the flag. Remote verification succeeded.
 
-## 3. 时间线
+## 3. Timeline
 
-见 `timeline.md`（5 个阶段：init → recon → static → exploit → wrap）。
+See `timeline.md` (5 phases: init → recon → static → exploit → wrap).
 
-## 4. 发现
+## 4. Findings
 
 ### F-01
 
@@ -37,7 +37,7 @@ pwn1 为无 PIE/无 canary 的 64 位 ELF，main 使用 `gets()` 读取 0x40 缓
   3. Send the ret2win payload against the remote service (E-003)
 - remediation: Replace gets() with fgets/read; enable canary, PIE and full RELRO; rely on ASLR.
 
-## 5. 攻击路径（Evidence → Finding → Path）
+## 5. Attack path (Evidence → Finding → Path)
 
 ### P-01
 
@@ -53,25 +53,25 @@ pwn1 为无 PIE/无 canary 的 64 位 ELF，main 使用 `gets()` 读取 0x40 缓
 
 ```mermaid
 graph LR
-  A[下载 pwn1] --> B[checksec 侦察]
-  B --> C[Ghidra 反编译 main]
-  C --> D[定位 gets 溢出 偏移0x48]
-  D --> E[构造 payload ret2win]
-  E --> F[远程验证 获取 flag]
+  A[Download pwn1] --> B[checksec recon]
+  B --> C[Ghidra decompile main]
+  C --> D[Locate gets overflow, offset 0x48]
+  D --> E[Build ret2win payload]
+  E --> F[Remote verify, capture flag]
 ```
 
-## 6. 复现
+## 6. Reproduction
 
 ```bash
 python3 exploit.py REMOTE
 ```
 
-## 7. 修复建议（若为真实应用）
+## 7. Remediation (if this were a real application)
 
-- 使用 `fgets`/`read` 替代 `gets`
-- 开启 canary + PIE + full RELRO
-- 部署 ASLR（服务器侧）
+- Replace `gets` with `fgets`/`read`
+- Enable canary + PIE + full RELRO
+- Deploy ASLR (server side)
 
-## 8. 附注
+## 8. Notes
 
-- field-journal 已脱敏沉淀（无真实目标信息）
+- field-journal deposit is sanitized (no real target information)

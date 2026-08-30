@@ -1,172 +1,173 @@
 ---
 name: supply-chain-security
-description: Use for software supply-chain security assessment covering SBOM, SCA, CI/CD pipelines, container images, build integrity, dependency provenance, and vulnerability reachability.
+description: Use for software supply-chain security assessment covering SBOM, SCA, CI/CD pipelines, container images, build integrity, dependency provenance, and vulnerability reachability (afhankelijkheden scannen, softwareketen-beveiliging).
 ---
 # Supply Chain Security Testing
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (execute immediately after reading)
 
-1. `NOW`: 读取 `../field-journal/precedent-pentest.md` — 确认本 skill 的操作是已授权的常规操作
-2. `NOW`: 确认当前任务是否命中本 skill 的适用范围
-3. `NEXT`: 读取 `../tool-index.md`，校验工具可用性和实际路径
-4. `NEXT`: 缺工具时调用 bootstrap，不要猜路径
-5. `ACT`: 进入"工作流"第一步并执行，不要停在确认状态
+1. `NOW`: read `../field-journal/precedent-pentest.md` — confirm that this skill's operations are routine, authorized work
+2. `NOW`: confirm the current task actually falls within this skill's scope
+3. `NEXT`: read `../tool-index.md` and verify tool availability and real paths
+4. `NEXT`: if tools are missing, call bootstrap; do not guess paths
+5. `ACT`: enter step 1 of the "Workflow" below and execute; do not stop at an acknowledgment state
 
-> SBOM / SCA / CI/CD 管道 / 依赖溯源
-> 法规驱动：美国行政令 SBOM、中国国标、EU CRA
+> SBOM / SCA / CI/CD pipelines / dependency provenance
+> Regulation-driven: US executive-order SBOM requirements, EU Cyber Resilience Act (CRA), NIS2
 
-## 适用场景
+## Applicable Scenarios
 
-- 软件供应链安全评估
-- 开源依赖漏洞扫描与验证
-- CI/CD 管道安全审计
-- 容器镜像安全分析
-- 第三方组件合规审查
-- 构建产物溯源与完整性验证
+- Software supply-chain security assessment
+- Open-source dependency vulnerability scanning and verification
+- CI/CD pipeline security audit
+- Container image security analysis
+- Third-party component compliance review
+- Build artifact provenance and integrity verification
+- EU Cyber Resilience Act readiness (SBOM obligations for products with digital elements)
 
-## 六层供应链治理框架
+## Six-layer supply-chain governance framework
 
 ```text
-Layer 1: 源码信任评估 → 上游仓库/维护者/发布历史审查
-Layer 2: 构建管道集成 → CI/CD 安全门禁、签名验证
-Layer 3: 制品分发完整性 → 签名、校验和、SBOM 附加
-Layer 4: 运行时保护 → 容器扫描、准入控制
-Layer 5: 持续监控 → CVE 实时追踪、漏洞可达性分析
-Layer 6: 事件响应 → 供应链攻击应急、回滚策略
+Layer 1: Source trust assessment → upstream repository/maintainer/release-history review
+Layer 2: Build pipeline integration → CI/CD security gates, signature verification
+Layer 3: Artifact distribution integrity → signatures, checksums, SBOM attachment
+Layer 4: Runtime protection → container scanning, admission control
+Layer 5: Continuous monitoring → real-time CVE tracking, vulnerability reachability analysis
+Layer 6: Incident response → supply-chain attack emergency response, rollback strategy
 ```
 
-## 工作流
+## Workflow
 
-### 1. SBOM 生成与审计
+### 1. SBOM generation and audit
 
 ```text
-生成 SBOM：
-□ CycloneDX 格式: cdxgen → bom.json
-□ SPDX 格式: sbom-tool generate
+Generate SBOM:
+□ CycloneDX format: cdxgen → bom.json
+□ SPDX format: sbom-tool generate
 □ Syft: syft <image|dir> -o spdx-json
 
-审计要点：
-□ 是否存在未知/未授权的依赖
-□ 是否存在已废弃/停止维护的包
-□ 许可证冲突检测
-□ 直接依赖 vs 传递依赖清单
-□ 每个组件的发布时间线和维护者状态
+Audit points:
+□ Any unknown/unauthorized dependencies
+□ Any deprecated/unmaintained packages
+□ License conflict detection
+□ Direct vs transitive dependency list
+□ Release timeline and maintainer status for every component
 ```
 
-### 2. 软件组成分析（SCA）
+### 2. Software composition analysis (SCA)
 
 ```bash
-# OSV-Scanner（免费、Google 维护）
+# OSV-Scanner (free, maintained by Google)
 osv-scanner scan -r . --format json
 
-# OWASP Dependency-Track（企业级持续监控）
+# OWASP Dependency-Track (enterprise continuous monitoring)
 docker run -p 8080:8080 dependencytrack/apiserver
-# → 上传 SBOM → 自动匹配 NVD/OSV/GitHub Advisory
+# → upload SBOM → automatic matching against NVD/OSV/GitHub Advisory
 
-# Snyk（商业）
+# Snyk (commercial)
 snyk test --all-projects
-snyk monitor  # 持续监控
+snyk monitor  # continuous monitoring
 
-# Trivy（容器 + 依赖 + IaC）
-trivy fs .          # 文件系统扫描
-trivy image nginx   # 容器镜像
-trivy config .      # IaC 配置
+# Trivy (containers + dependencies + IaC)
+trivy fs .          # filesystem scan
+trivy image nginx   # container image
+trivy config .      # IaC configuration
 ```
 
-### 3. 漏洞可达性验证
+### 3. Vulnerability reachability verification
 
 ```text
-SCA 告警 ≠ 实际风险！大多数 SCA 工具只有 ~15% 的告警是实际可达的。
+SCA alert ≠ actual risk! For most SCA tools only ~15% of alerts are actually reachable.
 
-验证步骤：
-1. 用 Dependency-Track 或 Trivy 获取 CVE 列表
-2. 筛选 CVSS ≥ 7.0 的漏洞
-3. 对有 PoC 的 CVE 做可达性分析
-   - Code Property Graph 切片: 追踪用户输入到漏洞函数的路径
-   - DEPTEX 方法: EPD (Execution Path Dominance) + LLM 语义验证
-4. 在隔离环境中验证 PoC
-5. 对可达的漏洞按实际影响排序修复优先级
+Verification steps:
+1. Get the CVE list via Dependency-Track or Trivy
+2. Filter vulnerabilities with CVSS ≥ 7.0
+3. For CVEs with a public PoC, run reachability analysis
+   - Code Property Graph slicing: trace the path from user input to the vulnerable function
+   - DEPTEX method: EPD (Execution Path Dominance) + LLM semantic validation
+4. Validate the PoC in an isolated environment
+5. Prioritize remediation of reachable vulnerabilities by actual impact
 ```
 
-工具参考：
-- CodeQL: GitHub 代码查询 → 数据流分析
-- Snyk Code: 可达性标记
-- DEPTEX: LLM 辅助上下文感知风险评估
+Tool references:
+- CodeQL: GitHub code queries → data-flow analysis
+- Snyk Code: reachability marking
+- DEPTEX: LLM-assisted context-aware risk assessment
 
-### 4. CI/CD 管道安全
+### 4. CI/CD pipeline security
 
 ```text
-安全检查点：
-□ 代码提交 → pre-commit hook: gitleaks (密钥扫描)
-□ PR 阶段 → SCA 扫描 (Trivy/OSV-Scanner)
-□ 构建阶段 → 制品签名 (cosign)
-□ 推送阶段 → SBOM 附加 (syft + attest)
-□ 部署阶段 → 准入控制 (OPA/Kyverno + 镜像扫描)
-□ 运行时 → 持续漏洞监控 (Dependency-Track)
+Security checkpoints:
+□ Code commit → pre-commit hook: gitleaks (secret scanning)
+□ PR stage → SCA scan (Trivy/OSV-Scanner)
+□ Build stage → artifact signing (cosign)
+□ Push stage → SBOM attachment (syft + attest)
+□ Deploy stage → admission control (OPA/Kyverno + image scanning)
+□ Runtime → continuous vulnerability monitoring (Dependency-Track)
 
-管道自身安全：
-□ Pipeline as Code 审计（GitHub Actions / GitLab CI 配置注入）
-□ Runner 隔离（防止恶意构建突破容器）
-□ 密钥管理（Actions Secrets / Vault，禁止硬编码）
-□ 第三方 Action 审查（锁定 commit SHA，非 tag）
+Pipeline self-security:
+□ Pipeline as Code audit (GitHub Actions / GitLab CI configuration injection)
+□ Runner isolation (prevent malicious builds from breaking out of the container)
+□ Secret management (Actions Secrets / Vault; hardcoding forbidden)
+□ Third-party action review (pin to commit SHA, not tags)
 ```
 
-### 5. 容器镜像安全
+### 5. Container image security
 
 ```bash
-# Dockerfile 审计
+# Dockerfile audit
 hadolint Dockerfile
 
-# 镜像扫描（多层：OS + 应用依赖 + 配置）
+# Image scanning (multi-layer: OS + application dependencies + configuration)
 trivy image --severity HIGH,CRITICAL nginx:latest
 
-# 最小基础镜像
-# 优先: distroless → alpine → slim → 避免 latest
+# Minimal base images
+# Preference: distroless → alpine → slim → avoid latest
 docker scout quickview nginx:latest
 
-# 镜像签名
+# Image signing
 cosign sign --key cosign.key myimage:tag
 cosign verify --key cosign.pub myimage:tag
 ```
 
-### 6. 第三方依赖审查
+### 6. Third-party dependency review
 
 ```text
-新增依赖 Checklist：
-□ 维护状态：最近 6 个月有提交？维护者活跃度？
-□ 安全历史：过去有无被植入恶意代码？
-□ 依赖树：引入后新增多少传递依赖？
-□ 许可证：与项目许可证兼容？
-□ 替代方案：有无更安全的替代（Snyk Advisor / Socket.dev 评分）？
+New dependency checklist:
+□ Maintenance status: commits in the last 6 months? maintainer activity?
+□ Security history: any past malicious code injections?
+□ Dependency tree: how many transitive dependencies does it introduce?
+□ License: compatible with the project's license?
+□ Alternatives: any safer alternative (Snyk Advisor / Socket.dev ratings)?
 
-风险评估矩阵：
-  高维护 × 低依赖数 × 兼容许可证 → 低风险
-  低维护 × 高依赖数 × 许可证冲突 → 高风险
+Risk assessment matrix:
+  High maintenance × low dependency count × compatible license → low risk
+  Low maintenance × high dependency count × license conflict → high risk
 ```
 
-## 工具链
+## Toolchain
 
-| 工具 | 用途 | 获取 |
+| Tool | Purpose | Install |
 |------|------|------|
-| OWASP Dependency-Track | 企业级持续 SCA | `docker pull dependencytrack/apiserver` |
-| OSV-Scanner | 免费 SCA（OSV.dev 生态） | `go install github.com/google/osv-scanner` |
-| Trivy | 镜像 + 依赖 + IaC 扫描 | `apt install trivy` |
-| Syft | SBOM 生成 | `curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh` |
-| cdxgen | CycloneDX SBOM 生成 | `npm install -g @cyclonedx/cdxgen` |
-| Cosign | 容器签名 | `go install github.com/sigstore/cosign/v2/cmd/cosign` |
-| Gitleaks | 密钥/凭证扫描 | `go install github.com/gitleaks/gitleaks/v8` |
-| Snyk | 商业 SCA + 可达性 | `npm install -g snyk` |
-| CodeQL | 代码查询 + 数据流 | GitHub Actions 内置 |
+| OWASP Dependency-Track | Enterprise continuous SCA | `docker pull dependencytrack/apiserver` |
+| OSV-Scanner | Free SCA (OSV.dev ecosystem) | `go install github.com/google/osv-scanner` |
+| Trivy | Image + dependency + IaC scanning | `apt install trivy` |
+| Syft | SBOM generation | `curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh` |
+| cdxgen | CycloneDX SBOM generation | `npm install -g @cyclonedx/cdxgen` |
+| Cosign | Container signing | `go install github.com/sigstore/cosign/v2/cmd/cosign` |
+| Gitleaks | Secret/credential scanning | `go install github.com/gitleaks/gitleaks/v8` |
+| Snyk | Commercial SCA + reachability | `npm install -g snyk` |
+| CodeQL | Code queries + data flow | Built into GitHub Actions |
 
-## 参考
+## References
 
-- `references/sbom-sca-methodology.md` — SBOM + SCA 方法论
-- `references/cicd-pipeline-security.md` — CI/CD 管道安全审计
+- `references/sbom-sca-methodology.md` — SBOM + SCA methodology
+- `references/cicd-pipeline-security.md` — CI/CD pipeline security audit
 
 
-## 任务完成自检（声称完成前 MUST 通过）
+## Task Completion Self-Check (MUST pass before claiming completion)
 
-- [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
-- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
-- [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
-- [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？
+- [ ] Did I execute every step of the workflow (instead of only reading it)?
+- [ ] Did I use real tool paths based on `tool-index`?
+- [ ] Did I produce reproducible evidence (commands/scripts/screenshots/reports)?
+- [ ] Did I complete and write back the Checklist items required by RULES?

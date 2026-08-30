@@ -1,98 +1,98 @@
-# CI/CD 管道安全审计
+# CI/CD Pipeline Security Audit
 
-## 管道攻击面
+## Pipeline attack surface
 
 ```text
-威胁模型（STRIDE）:
-□ 欺骗: 伪造构建/签名/来源
-□ 篡改: 修改源代码/构建产物/依赖
-□ 否认: 无审计日志的恶意操作
-□ 信息泄露: 管道日志/构建产物泄漏密钥
-□ 拒绝服务: 耗尽 CI 资源/破坏构建
-□ 权限提升: Runner 逃逸/密钥窃取
+Threat model (STRIDE):
+□ Spoofing: forged builds/signatures/provenance
+□ Tampering: modified source code/build artifacts/dependencies
+□ Repudiation: malicious operations without audit logs
+□ Information disclosure: pipeline logs/build artifacts leaking secrets
+□ Denial of service: exhausted CI resources/broken builds
+□ Privilege escalation: runner escape/secret theft
 ```
 
-## 审计清单
+## Audit checklist
 
-### 1. Pipeline as Code 配置
+### 1. Pipeline as Code configuration
 
 ```yaml
-# GitHub Actions 审计要点
-# ❌ 危险模式
+# GitHub Actions audit points
+# ❌ Dangerous pattern
 on:
-  pull_request_target:  # 可访问 secrets 的 PR 触发
+  pull_request_target:  # PR trigger with access to secrets
     types: [opened]
 
-# ❌ 脚本注入
-- run: echo "${{ github.event.issue.title }}"  # 用户输入 → shell
+# ❌ Script injection
+- run: echo "${{ github.event.issue.title }}"  # user input → shell
 
-# ❌ 不受限的 token 权限
+# ❌ Unrestricted token permissions
 permissions: write-all
 
-# ✅ 安全模式
+# ✅ Safe pattern
 on:
-  pull_request:  # 无 secrets 访问
+  pull_request:  # no secrets access
     types: [opened]
 
-# ✅ 固定到 SHA
+# ✅ Pinned to SHA
 - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
-# ✅ 最小权限
+# ✅ Least privilege
 permissions:
   contents: read
 ```
 
-### 2. 密钥管理
+### 2. Secret management
 
 ```bash
-# 扫描历史提交中的密钥
+# Scan commit history for secrets
 gitleaks detect --source . --verbose
 trufflehog git file://. --only-verified
 
-# 检查 Actions Secrets 使用
+# Check Actions Secrets usage
 gh secret list
-# 确认: 无硬编码密钥、定期轮换、最小权限
+# Confirm: no hardcoded secrets, regular rotation, least privilege
 
-# 运行时密钥注入
-# ✅ 使用 OIDC 替代长期密钥
-# ✅ Secrets 仅在需要时暴露到特定步骤
+# Runtime secret injection
+# ✅ Use OIDC instead of long-lived secrets
+# ✅ Expose secrets only to the specific steps that need them
 ```
 
-### 3. 构建完整性
+### 3. Build integrity
 
 ```bash
-# 构建溯源
-# 生成不可篡改的构建记录（SLSA L2+）
+# Build provenance
+# Generate tamper-proof build records (SLSA L2+)
 slsa-provenance generate --source . --output provenance.json
 
-# 产物签名
+# Artifact signing
 cosign sign-blob --key cosign.key artifact.tar.gz
 
-# 验证
+# Verification
 cosign verify-blob --key cosign.pub --signature artifact.tar.gz.sig artifact.tar.gz
 ```
 
-### 4. Runner 安全
+### 4. Runner security
 
 ```text
-□ 是否使用 GitHub-hosted runner？（推荐，每次全新环境）
-□ Self-hosted runner: 是否在隔离的 VM/容器中运行？
-□ 是否运行过 fork PR？（self-hosted runner 风险极高）
-□ Runner 是否有网络出站限制？
-□ 构建缓存是否可能跨构建泄漏？
+□ Are GitHub-hosted runners in use? (recommended; fresh environment on every run)
+□ Self-hosted runners: do they run in isolated VMs/containers?
+□ Have fork PRs ever been executed? (extremely high risk on self-hosted runners)
+□ Are outbound network restrictions in place for runners?
+□ Could the build cache leak data across builds?
 ```
 
-### 5. 依赖拉取安全
+### 5. Dependency pull security
 
 ```text
-□ npm: package-lock.json 是否提交？ 禁止 --force / --legacy-peer-deps
-□ pip: requirements.txt 是否冻结版本？ 禁止 pip install <未验证来源>
-□ Docker: FROM 是否固定 digest？ 禁止 latest tag
-□ Go: go.sum 是否提交？
-□ 私有包: 注册表认证是否用短期 token？
+□ npm: is package-lock.json committed? --force / --legacy-peer-deps forbidden
+□ pip: are requirements.txt versions frozen? pip install from unverified sources forbidden
+□ Docker: is FROM pinned to a digest? latest tag forbidden
+□ Go: is go.sum committed?
+□ Private packages: do registry credentials use short-lived tokens?
 ```
 
-## 自动化检查 Pipeline
+## Automated check pipeline
 
 ```yaml
 # .github/workflows/supply-chain.yml
@@ -133,5 +133,10 @@ jobs:
             -H "X-Api-Key: ${{ secrets.DTRACK_API_KEY }}" \
             -F "autoCreate=true" -F "project=myapp" -F "bom=@sbom.json"
 ```
+
+## EU/NL notes
+
+- NIS2 (Art. 21) requires affected essential/important entities to manage ICT supply-chain security: pipeline integrity (SLSA + signing), secret hygiene, and dependency-pull controls map directly to those obligations.
+- Verify that EU-hosted runners and artifact registries (e.g. AWS eu-central-1 / Azure West Europe / GCP europe-west4) keep build artifacts and logs within the agreed data-residency boundary of the Rules of Engagement.
 
 Source: SLSA Framework, OWASP CI/CD Top 10, GitHub Security Lab

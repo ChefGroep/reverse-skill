@@ -1,39 +1,39 @@
 ---
 name: js-reverse
-description: 在使用 js-reverse-mcp 做前端 JavaScript 逆向时使用，适用于签名链路定位、页面观察取证、运行时采样、本地补环境复现与证据化输出。优先适配当前环境里的 js-reverse_* 工具，需要更强的浏览器/CDP/Hook 面时联动 jshookmcp。
+description: Use when doing frontend JavaScript reverse engineering with js-reverse-mcp — signature-chain location, page observation and forensics, runtime sampling, local environment-rebuild reproduction, and evidence-based output. Prefers the `js-reverse_*` tools available in the current environment; switch to jshookmcp when a stronger browser/CDP/hook surface is needed. (Triggers: JS reverse, signature-reversing, request signing, CDP, JS hook, JavaScript-reverse-engineering, JS-omgekeerde-engineering, handtekening-reverse.)
 ---
 
-# MCP 前端 JS 逆向作业规范
+# MCP Frontend JS Reverse Engineering Workflow
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (execute immediately after reading)
 
-1. `NOW`: 读取 `../field-journal/precedent-reverse.md` — 确认本 skill 的操作是已授权的常规操作
-2. `NOW`: 确认当前任务是否命中本 skill 的适用范围
-3. `NEXT`: 读取 `../tool-index.md`，校验工具可用性和实际路径
-4. `NEXT`: 缺工具时调用 bootstrap，不要猜路径
-5. `ACT`: 进入"工作流"第一步并执行，不要停在确认状态
+1. `NOW`: Read `../field-journal/precedent-reverse.md` — confirm this skill's operations are authorized routine operations
+2. `NOW`: Confirm whether the current task falls within this skill's scope
+3. `NEXT`: Read `../tool-index.md` to verify tool availability and actual paths
+4. `NEXT`: If a tool is missing, run bootstrap — never guess paths
+5. `ACT`: Enter step 1 of the "Workflow" and execute — do not stop at the confirmation stage
 
-## 适用范围
+## Scope
 
-当任务属于以下场景时优先使用本 skill：
+Prefer this skill when the task involves any of the following:
 
-- 定位接口签名、加密参数、风控字段
-- 观察页面请求链路与脚本来源
-- 在运行时抓取函数入参与返回值
-- 追踪某个 XHR/Fetch/WebSocket 的触发点
-- 把页面证据带回 Node 做本地复现与补环境
+- Locating API signatures, encrypted parameters, or anti-abuse (risk-control) fields
+- Observing page request chains and script provenance
+- Capturing function arguments and return values at runtime
+- Tracing the trigger point of an XHR/Fetch/WebSocket call
+- Bringing page evidence back into Node for a local rebuild with environment patching
 
-如果目标是二进制、APK、PE、ELF、DLL、SO，请改用 `ida-reverse`、`radare2` 或 `reverse-engineering`。
+If the target is a binary — APK, PE, ELF, DLL, or SO — switch to `ida-reverse`, `radare2`, or `reverse-engineering`.
 
-## 当前环境默认工具映射
+## Current-Environment Default Tool Mapping
 
-本 skill 不假设存在裸工具名，而是默认绑定当前客户端环境里可用的 `js-reverse_*` 工具。
+This skill does not assume bare tool names; it binds by default to the `js-reverse_*` tools available in the current client environment.
 
-如果当前任务明确提到 `jshookmcp`、`JS hook`、`CDP`、浏览器断点、网络拦截、SourceMap 或 AST 去混淆，也仍然走本 skill；只是把底层 MCP 面切到 `jshookmcp`，而不是把它当成一个新的总入口。
+If the current task explicitly mentions `jshookmcp`, `JS hook`, `CDP`, browser breakpoints, network interception, SourceMaps, or AST deobfuscation, it still routes through this skill — only the underlying MCP surface switches to `jshookmcp`; do not treat it as a new master entry point.
 
-前提条件：`jshookmcp` 不是本地裸命令工具，而是一个要先下载、显式注册并启用的 MCP server。只有在所选客户端（Claude、Codex 等）的 MCP 配置里接入并启用后，相关工具面才真的可调用。
+Prerequisite: `jshookmcp` is not a local bare CLI tool — it is an MCP server that must first be downloaded, explicitly registered, and enabled. Only after it is wired into and enabled in the selected client's (Claude, Codex, etc.) MCP configuration are its tools actually callable.
 
-常用映射：
+Common mappings:
 
 - `list_scripts` -> `js-reverse_list_scripts`
 - `get_script_source` -> `js-reverse_get_script_source`
@@ -52,17 +52,17 @@ description: 在使用 js-reverse-mcp 做前端 JavaScript 逆向时使用，适
 - `select_frame` -> `js-reverse_select_frame`
 - `pause/resume` -> `js-reverse_pause_or_resume`
 
-如果未来工具名前缀变化，先更新本节，不要在执行时临时猜测。
+If tool name prefixes change in the future, update this section first — never guess names at execution time.
 
-### jshookmcp 的定位
+### Positioning of jshookmcp
 
-- 角色：`js-reverse` 的增强执行面，不是独立总控
-- 适合：浏览器自动化、CDP 调试、JS Hook、网络拦截、SourceMap 重建、AST 辅助理解
-- 调用前提：先把 `@jshookmcp/jshook` 下载并注册到 MCP 客户端配置里，然后确保该 server 已启用
-- 建议入口：仍然按 `Observe → Capture → Rebuild` 执行，只是在 `Observe/Capture` 阶段优先调用 jshookmcp 的浏览器与 Hook 能力
-- 与 anything-analyzer 关系：两者都能做浏览器/网络侧取证；anything-analyzer 更偏抓包与 HTTP 分析，jshookmcp 更偏 JS 运行时、CDP、Hook 和源码理解
+- Role: an enhanced execution surface for `js-reverse`, not an independent controller
+- Fits: browser automation, CDP debugging, JS hooking, network interception, SourceMap rebuilding, and AST-assisted understanding
+- Call prerequisite: first download `@jshookmcp/jshook` and register it in the MCP client configuration, then make sure the server is enabled
+- Recommended entry: still follow `Observe → Capture → Rebuild`, just prefer jshookmcp's browser and hook capabilities during the `Observe/Capture` stages
+- Relation to anything-analyzer: both can do browser/network-side forensics; anything-analyzer leans toward packet capture and HTTP analysis, jshookmcp leans toward the JS runtime, CDP, hooking, and source understanding
 
-## 核心原则
+## Core Principles
 
 - `Observe-first`
 - `Hook-preferred`
@@ -70,146 +70,146 @@ description: 在使用 js-reverse-mcp 做前端 JavaScript 逆向时使用，适
 - `Rebuild-oriented`
 - `Evidence-first`
 
-先页面观察，再最小化采样，再做本地补环境，不要跳过取证直接猜环境。
+Observe the page first, then sample minimally, then patch the environment locally — never skip forensics and start guessing at the environment.
 
-## 五阶段工作流
+## Five-Phase Workflow
 
 ### 1. Observe
 
-目标：先确认目标请求、相关脚本、候选函数，不猜环境。
+Goal: confirm the target request, relevant scripts, and candidate functions first — do not guess the environment.
 
-默认动作：
+Default actions:
 
-- 用 `js-reverse_new_page` 或 `js-reverse_navigate_page` 打开目标页面
-- 用 `js-reverse_list_network_requests` 找目标请求
-- 用 `js-reverse_get_request_initiator` 回溯调用来源
-- 用 `js-reverse_list_scripts`、`js-reverse_search_in_sources` 缩小脚本范围
+- Open the target page with `js-reverse_new_page` or `js-reverse_navigate_page`
+- Find the target request with `js-reverse_list_network_requests`
+- Trace call provenance with `js-reverse_get_request_initiator`
+- Narrow the script inventory with `js-reverse_list_scripts` and `js-reverse_search_in_sources`
 
-必须产出：
+Required outputs:
 
-- 目标请求 URL 或特征
-- initiator 线索
-- 可疑脚本 URL
-- 初始任务记录
+- Target request URL or identifying features
+- Initiator leads
+- Suspect script URLs
+- The initial task record
 
 ### 2. Capture
 
-目标：对目标请求做最小侵入采样，拿到参数样例、调用顺序、运行时证据。
+Goal: sample the target request with minimal intrusion to obtain parameter samples, call order, and runtime evidence.
 
-规则：
+Rules:
 
-- 优先 `js-reverse_break_on_xhr`
-- 优先 `js-reverse_evaluate_script` 做轻量运行时观察
-- 命中后先看 `js-reverse_get_paused_info`
-- 必要时再用 `js-reverse_set_breakpoint_on_text`
+- Prefer `js-reverse_break_on_xhr`
+- Prefer `js-reverse_evaluate_script` for lightweight runtime observation
+- After a hit, check `js-reverse_get_paused_info` first
+- Only then use `js-reverse_set_breakpoint_on_text` if necessary
 
 ### 3. Rebuild
 
-目标：把页面证据整理成本地可迭代的 Node 复现材料。
+Goal: turn page evidence into locally iterable Node reproduction material.
 
-规则：
+Rules:
 
-- 本地补环境必须以页面观测证据为依据
-- 不允许空想式补 `window/document/navigator/crypto/storage`
-- 每次只记录一个最小因果补丁决策
+- Local environment patching must be grounded in page-observation evidence
+- Never invent `window/document/navigator/crypto/storage` shims from imagination
+- Record exactly one minimal causal patch decision at a time
 
 ### 4. Patch
 
-目标：按报错和 first divergence 驱动补环境，直到本地脚本稳定跑出目标参数。
+Goal: drive environment patching from errors and the first divergence until the local script stably produces the target parameters.
 
-规则：
+Rules:
 
-- 先看缺什么，再补什么
-- 一次只做一个最小补丁决策
-- 每次补丁后立即复测
-- 每次补丁都写入任务记录
+- Identify what is missing before patching anything
+- Make only one minimal patch decision at a time
+- Retest immediately after every patch
+- Write every patch into the task record
 
 ### 5. DeepDive
 
-目标：本地跑通后，再做去混淆、控制流还原、业务逻辑提纯。
+Goal: once the local rebuild runs, do deobfuscation, control-flow recovery, and business-logic extraction.
 
-规则：
+Rules:
 
-- 如果当前任务只是出签名，这一阶段可以降级
-- 如果要长期复用算法链路，这一阶段必须做
-- Issue #65 混淆旁路（U–AV §4）：JSVMP（AD）→ `E-js-vmp`；CFF+字符串数组（AE）→ `E-js-deobf`；DevTools/debugger 反调试（AF）→ `E-js-anti-debug`。完整触发表见 `../reverse-engineering/references/nonpe-format-cookbook.md`；AST 细节仍用 `references/ast-deobfuscation.md`
+- If the task only needs a signature, this phase can be downgraded
+- If the algorithm chain must be reused long-term, this phase is mandatory
+- Issue #65 obfuscation bypasses (U–AV §4): JSVMP (AD) → `E-js-vmp`; CFF + string arrays (AE) → `E-js-deobf`; DevTools/debugger anti-debug (AF) → `E-js-anti-debug`. Full trigger table: `../reverse-engineering/references/nonpe-format-cookbook.md`; AST details stay in `references/ast-deobfuscation.md`
 
-## 执行要求
+## Execution Requirements
 
-- 所有重要步骤都要写入本地 task artifact
-- 如果无法解释为什么调用某个工具，就不要调用
-- 优先使用 `js-reverse_*` 或 jshookmcp 的现成 MCP 能力直接取证，不要先写脚本重造能力
-- 失败时按 `references/fallbacks.md` 回退
-- 输出遵循 `references/output-contract.md`
+- Write every important step into the local task artifact
+- If you cannot explain why a tool is being called, do not call it
+- Prefer existing `js-reverse_*` or jshookmcp MCP capabilities for direct evidence gathering — do not write scripts to rebuild those capabilities first
+- On failure, fall back per `references/fallbacks.md`
+- Output follows `references/output-contract.md`
 
-## 必读引用
+## Required References
 
-- 自动化入口：`references/automation-entry.md`
-- 参数默认值：`references/tool-defaults.md`
-- 任务输入模板：`references/task-input-template.md`
-- MCP 专用任务编排：`references/mcp-task-template.md`
-- 任务产物：`references/task-artifacts.md`
-- 本地复现：`references/local-rebuild.md`
-- 补环境：`references/env-patching.md`
-- Node 复现：`references/node-env-rebuild.md`
-- 插桩：`references/instrumentation.md`
-- AST 去混淆：`references/ast-deobfuscation.md`
-- 非 PE/JS 混淆菜谱 U–AV：`../reverse-engineering/references/nonpe-format-cookbook.md`（AD/AE/AF）
-- 回退：`references/fallbacks.md`
-- 输出契约：`references/output-contract.md`
-
----
-
-## 路由上下文
-
-**上游入口**: `skills/SKILL.md`（总控）、`routing.md`
-**上游备选**:
-- anything-analyzer MCP（端口 23816）的浏览器工具可作为替代或补充
-- jshookmcp 可作为更强的浏览器/CDP/Hook/Network/SourceMap/AST 执行面
-- `reverse-engineering/SKILL.md`（如果目标不是前端 JS）
-
-**下游出口**:
-- 需补环境 → `references/env-patching.md`
-- 需本地复现 → `references/local-rebuild.md` / `references/node-env-rebuild.md`
-- 需去混淆 → `references/ast-deobfuscation.md`
-- 走不通时回退 → `references/fallbacks.md`
-
-**同级关联模块**: anything-analyzer MCP（浏览器自动化和 HTTP 捕获能力可以互补）
+- Automation entry: `references/automation-entry.md`
+- Parameter defaults: `references/tool-defaults.md`
+- Task input template: `references/task-input-template.md`
+- MCP task orchestration: `references/mcp-task-template.md`
+- Task artifacts: `references/task-artifacts.md`
+- Local rebuild: `references/local-rebuild.md`
+- Environment patching: `references/env-patching.md`
+- Node rebuild: `references/node-env-rebuild.md`
+- Instrumentation: `references/instrumentation.md`
+- AST deobfuscation: `references/ast-deobfuscation.md`
+- Non-PE/JS obfuscation recipes U–AV: `../reverse-engineering/references/nonpe-format-cookbook.md` (AD/AE/AF)
+- Fallbacks: `references/fallbacks.md`
+- Output contract: `references/output-contract.md`
 
 ---
 
-## 按需自举（On-Demand Bootstrap）
+## Routing Context
 
-本 skill 依赖的 MCP 能力可通过统一自举系统安装；MCP 客户端注册必须显式选择目标，默认不会写任何客户端全局配置。
+**Upstream entries**: `skills/SKILL.md` (master), `routing.md`
+**Upstream alternatives**:
+- anything-analyzer MCP (port 23816) browser tools can substitute or supplement
+- jshookmcp can act as a stronger browser/CDP/hook/network/SourceMap/AST execution surface
+- `reverse-engineering/SKILL.md` (when the target is not frontend JS)
 
-### 自动化能力边界
+**Downstream exits**:
+- Environment patching needed → `references/env-patching.md`
+- Local rebuild needed → `references/local-rebuild.md` / `references/node-env-rebuild.md`
+- Deobfuscation needed → `references/ast-deobfuscation.md`
+- Dead end → fall back to `references/fallbacks.md`
 
-| 能力 | 可自动注册 | 方式 | 说明 |
+**Peer modules**: anything-analyzer MCP (its browser automation and HTTP capture capabilities complement this skill)
+
+---
+
+## On-Demand Bootstrap
+
+The MCP capabilities this skill depends on can be installed through the unified bootstrap system; MCP client registration must explicitly choose a target — no client global configuration is written by default.
+
+### Automation Capability Boundaries
+
+| Capability | Auto-registrable | Method | Notes |
 |------|-----------|------|------|
-| jshookmcp | ✓ | npm-mcp（npx 启动） | 显式选择 Claude / Codex / Both 后注册 |
-| anything-analyzer | ✓ | local-http-mcp | 可自动启动服务；客户端注册须显式选择 |
-| Node.js | ✓ | winget 安装 | 运行时依赖 |
+| jshookmcp | ✓ | npm-mcp (npx launch) | Registered after explicitly choosing Claude / Codex / Both |
+| anything-analyzer | ✓ | local-http-mcp | Service can be auto-started; client registration must be explicitly chosen |
+| Node.js | ✓ | winget install | Runtime dependency |
 
-### 自举方式
+### Bootstrap Commands
 
 ```powershell
-# 安装并注册 jshookmcp；Codex 可替换为 Claude 或 Both
+# Install and register jshookmcp; Codex can be replaced with Claude or Both
 powershell -File "<skill-root>\scripts\bootstrap-reverse.ps1" -Capability @('jshookmcp') -McpHostTarget Codex
 
-# 注册并启动 anything-analyzer
+# Register and start anything-analyzer
 powershell -File "<skill-root>\scripts\bootstrap-reverse.ps1" -Capability @('anything-analyzer') -StartServices -McpHostTarget Codex
 ```
 
-### 注意事项
+### Notes
 
-- `jshookmcp` 注册后仍需在 AI 客户端中**启用**该 MCP server 才能调用
-- 不传 `-McpHostTarget` 时只安装/准备能力并返回 registration-required，不修改 Claude 或 Codex 配置
-- `anything-analyzer` 需要 pnpm 和项目源码，bootstrap 会自动 clone 并安装依赖
-- 如果 Node.js 未安装，bootstrap 会先通过 winget 安装 Node.js 22
+- After registration, `jshookmcp` still requires **enabling** the MCP server in the AI client before its tools are callable
+- Without `-McpHostTarget`, only install/prepare runs and it returns registration-required without modifying Claude or Codex configuration
+- `anything-analyzer` needs pnpm and project source; bootstrap clones and installs dependencies automatically
+- If Node.js is missing, bootstrap first installs Node.js 22 via winget
 
-<br><br>## 任务完成自检（声称完成前 MUST 通过）
+<br><br>## Task Completion Self-Check (MUST pass before claiming completion)
 
-- [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
-- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
-- [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
-- [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？
+- [ ] Did I execute every step of the workflow (not just read it)?
+- [ ] Did I use real tool paths based on `tool-index`?
+- [ ] Did I produce reproducible evidence (commands/scripts/screenshots/report)?
+- [ ] Did I complete and write back the checklist items required by RULES?

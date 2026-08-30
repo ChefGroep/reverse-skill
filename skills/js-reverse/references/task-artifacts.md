@@ -1,11 +1,11 @@
-# 任务产物
+# Task Artifacts
 
-建议每个任务至少保留：
+Keep at least the following for every task:
 
-- 目标请求样例
-- initiator 调用栈
-- 可疑脚本 URL
-- 关键断点位置
-- 关键函数入参/返回值
-- first divergence 记录
-- 每次补环境补丁说明
+- A sample of the target request
+- The initiator call stack
+- URLs of suspect scripts
+- Key breakpoint locations
+- Key function arguments/return values
+- First-divergence records
+- A note for every environment patch applied

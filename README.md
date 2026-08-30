@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">reverse-skill</h1>
-<h3 align="center">Cybersecurity Skills Router · 逆向技能路由包</h3>
+<h3 align="center">Cybersecurity Skills Router</h3>
 
 <p align="center"><em style="font-family: Georgia, serif; font-size: 1.2em; color: #777;">Navigate the dark waters, sail against the stream.</em></p>
 
@@ -36,7 +36,6 @@
 </p>
 
 <p align="center">
-  🌐 <a href="README_zh.md">中文</a> ·
   <a href="https://reverse.apivix.com/">Project website</a> ·
   <a href="https://reverse.apivix.com/docs/">Online tutorial</a>
 </p>
@@ -203,8 +202,8 @@ The routing core, regression suite, manifests, and case workflow do not depend o
 
 ```
 .
-├── README.md / README_zh.md / README_AI.md
-├── RULES.md / RULES_zh.md
+├── README.md / README_AI.md
+├── RULES.md
 ├── skills/
 │   ├── MASTER-ROUTING.md / SKILL.md / routing.md
 │   ├── ops/                   # ops contracts
@@ -316,4 +315,4 @@ See [Installation and Download Security Guidance](docs/UV-AND-DOWNLOAD-SECURITY.
 
 ## Community quick start and issue triage
 
-See [Quick Start](docs/QUICKSTART_zh.md) and [Community Issue Triage](docs/COMMUNITY-ISSUE-TRIAGE.md) for installation, client integration, and how community issues are classified. Installation/archive security details remain in [Installation and Download Security Guidance](docs/UV-AND-DOWNLOAD-SECURITY.md).
+See [Quick Start](docs/QUICKSTART.md) and [Community Issue Triage](docs/COMMUNITY-ISSUE-TRIAGE.md) for installation, client integration, and how community issues are classified. Installation/archive security details remain in [Installation and Download Security Guidance](docs/UV-AND-DOWNLOAD-SECURITY.md).

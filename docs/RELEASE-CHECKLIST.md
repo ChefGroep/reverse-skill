@@ -1,20 +1,20 @@
-# 发布 Checklist
+# Release Checklist
 
-> 每次发版前逐项核对。版本事实源：VERSION 文件必须与 CHANGELOG.md 最新发布版本一致（CI ersion-check job 自动校验，不一致会红）。
+> Work through each item before every release. Version source of truth: the VERSION file must match the latest release version in CHANGELOG.md (the CI version-check job enforces this automatically; mismatches turn CI red).
 
-## 发版步骤
+## Release Steps
 
-1. [ ] 确认 CHANGELOG.md 的 [Unreleased] 段内容齐全（Keep a Changelog 分组：Added / Fixed / Security / Removed）
-2. [ ] 将 ## [Unreleased] 改为 ## [x.y.z] — YYYY-MM-DD，并把比较链接从 ...HEAD 更新到新 tag
-3. [ ] 同步更新 VERSION 文件为 x.y.z
-4. [ ] 里程碑版本（如 v1.0.0 / v1.1.0）同步更新 docs/RELEASE_NOTES_v<x.y.z>.md
-5. [ ] 打 tag：git tag v<x.y.z> + git push --tags
-6. [ ] 推送后确认 CI 全绿（routing 173 基准 + coherence + pin gate + version-check）
+1. [ ] Confirm the CHANGELOG.md [Unreleased] section is complete (Keep a Changelog groups: Added / Fixed / Security / Removed)
+2. [ ] Change ## [Unreleased] to ## [x.y.z] — YYYY-MM-DD, and update the compare link from ...HEAD to the new tag
+3. [ ] Update the VERSION file to x.y.z in the same commit
+4. [ ] For milestone versions (e.g. v1.0.0 / v1.1.0), also update docs/RELEASE_NOTES_v<x.y.z>.md
+5. [ ] Tag the release: git tag v<x.y.z> + git push --tags
+6. [ ] After pushing, confirm CI is fully green (routing 173 baseline + coherence + pin gate + version-check)
 
-## 元数据同步（发版顺手项）
+## Metadata Sync (Do While Releasing)
 
-- 新增/删除 bootstrap 能力 → 同步 RULES.md / RULES_zh.md / skills/SKILL.md 的能力列表（以 skills/scripts/bootstrap-manifest.json 为唯一事实源，当前 25 项）
-- 新增 field-journal 条目 → 更新 skills/field-journal/_index.md 三处（场景分类 / 高频模式 / 实体倒排）与统计
-- 路由规则变更 → 只改 skills/config/routing.json（文档由生成脚本维护或至少保持一致）
+- Add/remove a bootstrap capability → sync the capability lists in RULES.md / skills/SKILL.md (skills/scripts/bootstrap-manifest.json is the single source of truth, currently 25 items)
+- Add a field-journal entry → update the three sections of skills/field-journal/_index.md (scenario categories / high-frequency patterns / entity inverted index) plus the statistics
+- Routing rule changes → edit only skills/config/routing.json (docs are maintained by the generator script or kept consistent manually)
 
-> 注：journal 条目底部不再手工维护 <!-- [进化统计] --> 累计注释（已于 2026-08-10 移除，数字无法可靠维护），项目计数以 _index.md 为准。
+> Note: the <!-- [evolution stats] --> cumulative comment at the bottom of journal entries is no longer maintained by hand (removed on 2026-08-10; the numbers could not be maintained reliably); counts are authoritative in _index.md.

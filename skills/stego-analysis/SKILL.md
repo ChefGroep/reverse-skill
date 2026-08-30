@@ -14,7 +14,7 @@ description: |
 Steganografie-detectie en -extractie. Werkt uitsluitend op lokaal aanwezig
 materiaal (offline sample preset); geen uploads naar online decoders.
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (execute immediately after reading)
 
 1. `NOW`: bepaal dat het materiaal lokaal is (`offline-sample` preset bij
    `case-init.sh`); online-decoders (AperiSolve e.d.) zijn verboden —

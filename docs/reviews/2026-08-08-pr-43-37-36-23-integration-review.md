@@ -1,82 +1,82 @@
-# PR #43 / #37 / #36 / #23 本地审查与集成报告
+# PR #43 / #37 / #36 / #23 Local Review and Integration Report
 
-- 日期：2026-08-08
-- 基线：`origin/main` at `6315d02`
-- 审查分支：`codex/review-pr-43-37-36-23`
-- 范围：只审查四个 PR 相对当前主线的增量价值；不执行外部目标动作
-- 结论：四个 PR 均有可复用价值，但只有 #43、#37 适合保留主体；#36、#23 必须选择性集成
+- Date: 2026-08-08
+- Baseline: `origin/main` at `6315d02`
+- Review branch: `codex/review-pr-43-37-36-23`
+- Scope: assess only the incremental value of the four PRs relative to the current main line; no external target actions executed
+- Conclusion: all four PRs carry reusable value, but only #43 and #37 are suitable to keep in their main form; #36 and #23 must be integrated selectively
 
-## 执行摘要
+## Executive Summary
 
-| PR | 相对主线价值 | 集成决定 | 关键边界 |
+| PR | Value vs. Main Line | Integration Decision | Key Boundary |
 |---|---|---|---|
-| #43 | 很高 | 保留结构化路由、163 条当前回归基准、双平台 CI、供应链 pin gate、动态索引 | 删除 OpenCode 配置、安装器和专属代理；核心不绑定任何客户端 |
-| #37 | 高 | 合并 case-review、证据图审查、哈希校验与单测，并增加 R40 | 同时接受 `done` 与当前约定的 `completed` |
-| #36 | 中高 | 选择性合并 Burp 重连/换行消息处理、原子 token、Anything Analyzer 鉴权、进程树与 sudo home 修复 | 拒绝“所有能力一律 ready”等语义回退 |
-| #23 | 中（整包偏低） | 仅合并 Bash case-init、case-guard、结构化 Bash 路由和 CI parity | 排除 92 文件中的客户端清单、GIF、演示生成物和硬编码路由副本 |
+| #43 | Very high | Keep structured routing, the 163-case current regression baseline, dual-platform CI, the supply-chain pin gate, and the dynamic index | Remove OpenCode configuration, installers, and dedicated agents; the core binds to no client |
+| #37 | High | Merge case-review, evidence-graph review, hash verification, and unit tests, and add R40 | Accept both `done` and the currently agreed `completed` |
+| #36 | Medium-high | Selectively merge Burp reconnect/newline message handling, atomic token handling, Anything Analyzer authentication, process-tree and sudo-home fixes | Reject semantic regressions such as "all capabilities unconditionally ready" |
+| #23 | Medium (lower as a whole package) | Merge only Bash case-init, case-guard, structured Bash routing, and CI parity | Exclude client manifests, GIFs, presentation artifacts, and hardcoded routing copies from the 92 files |
 
-## 平台边界
+## Platform Boundary
 
-结构化路由的唯一事实源是 `skills/config/routing.json`。PowerShell 与 Bash 入口都读取该文件；宿主客户端只允许作为可选适配器存在，不能决定仓库身份、路由规则、测试基准或安装路径。
+The single source of truth for structured routing is `skills/config/routing.json`. Both the PowerShell and Bash entry points read that file; host clients are permitted only as optional adapters and must not decide repository identity, routing rules, test baselines, or installation paths.
 
 ```mermaid
 flowchart LR
-    C["任意宿主 / CLI / Agent"] --> A["可选适配层"]
-    A --> R["routing.json 单一事实源"]
+    C["Any host / CLI / Agent"] --> A["Optional adapter layer"]
+    A --> R["routing.json single source of truth"]
     P["PowerShell router"] --> R
     B["Bash router"] --> R
-    R --> S["41 条路由 / 42 个已跟踪技能模块"]
-    R --> T["163 条回归基准"]
+    R --> S["41 routes / 42 tracked skill modules"]
+    R --> T["163 regression cases"]
     T --> W["Windows CI"]
     T --> L["Linux CI"]
 ```
 
-## 审查发现与修正
+## Review Findings and Corrections
 
-1. #43 的设计价值来自结构化数据与自动门禁，而不是 OpenCode 接入。所有 OpenCode 专属文件与 CI job 已移除。
-2. #37 原实现只识别 `done`，会把主线使用的 `completed` 误判为未完成；已补兼容与第 7 条单测。
-3. #36 的桥接重连和 token 写入是净增益；其能力状态改写会制造假阳性，未合并。
-4. #23 的 Bash router 原样复制硬编码表，会立刻与 #43 的 R40/priority 漂移；已重写为读取 `routing.json`，并在 CI 校验 R1/R3/R40 parity。
-5. 新 supply-chain gate 暴露 Kali manifest 的 7 个浮动安装源。已固定 Frida 14.10.4、IDA MCP commit、Agent Browser 0.31.1、ProxyCat commit、Nuclei v3.8.0、pwntools 4.15.0，并让安装命令实际使用这些 pin。
-6. 推送后强制复审发现 Bash `case-init` 未继承 CaseName 路径约束；已拒绝路径、控制字符、通配符与尾随点/空格，并加入负向 CI。
-7. Bash 的授权 URL 曾错误落入 `offline` 且可能 ready；已与 PowerShell 对齐为 `authorized_target_only`，明确 offline 只接受本地样本。
-8. Bash `case-guard` 现只从 `auth`、`network_profile`、`signoff` 对应章节取值，notes/证据中的伪字段不能通过门禁。
-9. Kali ProxyCat 固定源码安装现会生成可探测的 `~/.local/bin/proxycat` wrapper；CI checkout 也从可变 tag 固定到 v4.2.2 commit。
-10. 原动态 INDEX 在开发机误收录了 12 个 `.gitignore` 排除的本地模块，干净 clone 会失败；生成器现只枚举 Git 已跟踪 skill，clean clone 与带私有扩展的工作区都稳定为 42 个核心模块。
+1. #43's design value comes from structured data and automated gates, not from OpenCode integration. All OpenCode-specific files and CI jobs were removed.
+2. #37's original implementation recognized only `done` and would misreport main line's `completed` as unfinished; compatibility was added along with unit test 7.
+3. #36's bridge reconnect and token writing are net gains; its capability-state rewrite would create false positives and was not merged.
+4. #23's Bash router copied a hardcoded table verbatim and would immediately drift from #43's R40/priority values; it was rewritten to read `routing.json`, with R1/R3/R40 parity verified in CI.
+5. The new supply-chain gate exposed 7 floating installation sources in the Kali manifest. Frida 14.10.4, the IDA MCP commit, Agent Browser 0.31.1, a ProxyCat commit, Nuclei v3.8.0, and pwntools 4.15.0 were pinned, and the install commands now actually use these pins.
+6. A forced re-review after pushing found that Bash `case-init` did not inherit the CaseName path constraints; paths, control characters, wildcards, and trailing dots/spaces are now rejected, with negative CI cases added.
+7. Bash's authorization URL previously fell into `offline` by mistake and could still become ready; it is now aligned with PowerShell as `authorized_target_only`, making explicit that offline accepts local samples only.
+8. Bash `case-guard` now reads values only from the `auth`, `network_profile`, and `signoff` sections; pseudo-fields in notes/evidence cannot pass the gate.
+9. The Kali ProxyCat pinned source install now generates a discoverable `~/.local/bin/proxycat` wrapper; the CI checkout was also pinned from a mutable tag to the v4.2.2 commit.
+10. The original dynamic INDEX mistakenly included 12 `.gitignore`-excluded local modules on the development machine, so a clean clone would fail; the generator now enumerates only Git-tracked skills, and both a clean clone and a workspace with private extensions stabilize at 42 core modules.
 
-## 相对旧主线的量化提升
+## Quantified Improvement Over the Old Main Line
 
-使用同一组 163 条基准分别调用旧主线硬编码 router 与新结构化 router，每条均在独立 PowerShell 进程运行：
+Using the same 163-case baseline, the old main line's hardcoded router and the new structured router were each invoked once per case, with every case running in an independent PowerShell process:
 
-| 版本 | 通过 | 准确率 | 无输出 |
+| Version | Passed | Accuracy | No Output |
 |---|---:|---:|---:|
-| 旧主线 `6315d02` | 137 / 163 | 84.05% | 0 |
-| 当前结构化实现 | 163 / 163 | 100% | 0 |
+| Old main line `6315d02` | 137 / 163 | 84.05% | 0 |
+| Current structured implementation | 163 / 163 | 100% | 0 |
 
-绝对增加 26 条正确路由、提升 15.95 个百分点。改善覆盖 Frida/Android、证书与 root 检测、抓包重放、勒索软件、Burp/Metasploit、Go 二进制、BLE、USB、native `.so`、内存 dump 等旧实现会回退 R0 的场景。
+An absolute gain of 26 correctly routed cases, an improvement of 15.95 percentage points. The improvement covers scenarios where the old implementation regressed to R0, including Frida/Android, certificate and root detection, capture replay, ransomware, Burp/Metasploit, Go binaries, BLE, USB, native `.so`, and memory dumps.
 
-## 验证结果
+## Verification Results
 
-| 验证项 | 结果 |
+| Verification Item | Result |
 |---|---|
-| 结构化路由全量回归 | 163 / 163 通过 |
-| 路由一致性与供应链 pin gate | 通过 |
-| PowerShell smoke | 通过 |
-| P0 friction / scope-guard 回归 | 通过 |
-| 旧版/新版 163 条 A/B | 137/163 → 163/163 |
-| case-review Python 单测 | 7 / 7 通过 |
-| Burp bridge Node 回归 | 1 / 1 通过 |
-| Bash router/case-init/case-guard parity | 通过 |
-| PowerShell、Bash 语法与 JSON 解析 | 通过 |
-| Java 编译检查 | Gradle 8.7 分发下载被本机证书吊销网络阻塞；改用 Maven Central 的声明依赖与 JDK 21，`McpHttpServer.java` 编译通过 |
+| Full structured-routing regression | 163 / 163 passed |
+| Routing coherence and supply-chain pin gate | Passed |
+| PowerShell smoke | Passed |
+| P0 friction / scope-guard regression | Passed |
+| Old vs. new 163-case A/B | 137/163 → 163/163 |
+| case-review Python unit tests | 7 / 7 passed |
+| Burp bridge Node regression | 1 / 1 passed |
+| Bash router/case-init/case-guard parity | Passed |
+| PowerShell, Bash syntax, and JSON parsing | Passed |
+| Java compile check | The Gradle 8.7 distribution download was blocked by the machine's certificate-revocation network; switching to declared dependencies from Maven Central with JDK 21, `McpHttpServer.java` compiles |
 
-## 剩余风险
+## Remaining Risks
 
-- Bash 结构化路由依赖 Python 3；这是显式运行依赖，但避免了第二份路由表。
-- 固定依赖版本需要周期性、显式升级，不再隐式追随 `latest`。
-- 客户端适配仍可继续扩展，但必须保持核心数据与测试完全宿主无关。
-- 本机未完成 Gradle task 层测试；原因是 128 MB wrapper 分发下载受证书吊销网络与低速链路阻塞，已用同版本依赖完成改动 Java 源文件的独立编译检查。
+- Bash structured routing depends on Python 3; this is an explicit runtime dependency, but it avoids a second routing table.
+- Pinned dependency versions require periodic, explicit upgrades and no longer implicitly follow `latest`.
+- Client adapters can continue to be extended, but the core data and tests must remain fully host-agnostic.
+- Gradle task-level testing was not completed on this machine; the cause was the 128 MB wrapper distribution download being blocked by the certificate-revocation network and a slow link. An independent compile check of the changed Java sources was completed with same-version dependencies.
 
-## 最终建议
+## Final Recommendation
 
-合并当前审查分支的选择性结果，不合并四个 PR 的原始整包形态。后续 PR 应按“核心路由 / 宿主适配 / 演示资产 / 文档”拆分，便于独立审查与回滚。
+Merge the selective results of the current review branch, not the four PRs in their original whole-package form. Follow-up PRs should be split along "core routing / host adapters / presentation assets / docs" to keep independent review and rollback easy.

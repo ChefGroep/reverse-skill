@@ -25,7 +25,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ### Added
 - **Routing single source of truth** — `skills/config/routing.json` (R0–R39 keyword rules with `must` / `mustAll` / `exclude` semantics). `master-route.ps1` now reads this file; hardcoded routing tables removed from scripts. Routing knowledge lives in one place.
 - **Routing regression benchmark** — `skills/tests/routing-benchmark.json` (163 bilingual cases, 40 quick) + `skills/scripts/test-routing.ps1` runner. Any routing change must keep the benchmark green.
-- **Routing keyword coverage expansion** (benchmark-driven): burp suite family, pcap/wireshark, root-detection/certificate-pinning, buffer overflow, `.so`/native/JNI, go binaries (中文), js-encrypt, webshell, privilege escalation, S3/object storage, memory dump, incident response, Bluetooth/BLE, USB, Unity/game reverse, security assessment, and more.
+- **Routing keyword coverage expansion** (benchmark-driven): burp suite family, pcap/wireshark, root-detection/certificate-pinning, buffer overflow, `.so`/native/JNI, go binaries, js-encrypt, webshell, privilege escalation, S3/object storage, memory dump, incident response, Bluetooth/BLE, USB, Unity/game reverse, security assessment, and more.
 - **Supply-chain pin gate** — `verify-routing-coherence.ps1` now fails on any auto-install capability lacking `pinnedVersion` / `pinnedCommit` / `pinPolicy` / asset hash. Pinned: frida-tools 14.10.4, pwntools 4.15.0, agent-browser 0.31.1, ida-pro-mcp @commit, SecLists/ProxyCat @commit, nuclei v3.9.0; winget sources annotated with `winget-latest` policy.
 - **Client-neutral integration contract** — routing, tests, manifests, and case workflows remain independent of Claude Code, Codex, Cursor, OpenCode, or any other client; client adapters are optional and must not define repository identity.
 - **Skill navigation index** — `skills/INDEX.md` auto-generated from SKILL.md frontmatter by `extract-summaries.ps1` (`-Check` mode for CI drift detection).
@@ -43,7 +43,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 - **Upstream mixed-EOL files** — 3 markdown files committed with CRLF while `.gitattributes` declares `*.md eol=lf`; normalized to LF so `git status` stays clean on fresh clones.
-- Routing: sigma vs malware, LLM 越狱 vs iOS 越狱, 完整渗透/打到域控 vs AD 域控, forensics vs OT ics; master-route.ps1 rewritten UTF-8 BOM for PS 5.1 CJK
+- Routing: sigma vs malware, LLM jailbreak vs iOS jailbreak, full pentest/reaching the domain controller vs AD DC, forensics vs OT ics; master-route.ps1 rewritten with a UTF-8 BOM for PS 5.1 CJK
 - Linux/macOS bootstrap: register PentestSwarm MCP with a verified executable path after Go install or when already installed
 
 ### Security
@@ -97,7 +97,7 @@ First **formal** public release of the reverse-skill skill-router pack.
 #### Core skills & docs
 
 - Full skill matrix: APK / IDA / radare2 / JS / .NET / mobile / malware / pwn / firmware / EDR / pentest / API / LLM / supply-chain / crypto / binary-diff / patch-diff / attack-chain / docs & diagrams
-- `MASTER-ROUTING.md` + `routing.md` / `routing_zh.md` three-axis matrix
+- `MASTER-ROUTING.md` + `routing.md` three-axis matrix
 - Bootstrap + tool-index pipeline (`bootstrap-reverse.ps1` / `.sh`, `refresh-tool-index`)
 - `field-journal` precedent library + completion checklist
 - Multi-platform paths: Windows primary, Linux / macOS / Kali docs and scripts
@@ -106,7 +106,7 @@ First **formal** public release of the reverse-skill skill-router pack.
 
 #### Quality / localization
 
-- UTF-8 integrity for Chinese docs (`RULES_zh`, `routing_zh`, related guides)
+- UTF-8 integrity for bilingual docs and scripts
 - Client-side lab playbook and recon pipeline references for authorized testing friction reduction
 
 ### Notes

@@ -1,6 +1,6 @@
 # Cybersecurity Skills Router — AI Agent Bootstrap
 
-> ⚡ **For AI agents only.** If you are a human reader, go back to [README.md](README.md) (English) or [README_zh.md](README_zh.md) (中文).
+> ⚡ **For AI agents only.** If you are a human reader, go back to [README.md](README.md).
 
 This file contains the bootstrap instructions, deployment routing, and behavior chain for AI agents. If you are an AI agent (Claude Code, Codex CLI, Cursor, Cline, Windsurf, Kiro, etc.), **execute section 0 immediately** after finishing this file.
 

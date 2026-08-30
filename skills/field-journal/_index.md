@@ -1,41 +1,41 @@
-# 项目经验索引
+# Project Experience Index
 
-> 本文件用于在新任务开始前快速检索历史经验。
-> 带 `[种子]` 标记的条目是预置参考案例，不计入真实完成项目。
-> 真实项目使用日期文件名（例如 `2026-05-16_*`），种子案例使用 `seed-*`。
+> This file is used to quickly retrieve past experience before starting a new task.
+> Entries marked `[Seed]` are preloaded reference cases and do not count as real completed projects.
+> Real projects use date-based filenames (e.g. `2026-05-16_*`); seed cases use `seed-*`.
 
-## 统计
+## Statistics
 
-- 真实项目数：20
-- 种子参考数：17
-- 总条目数：37
-- 最近更新：2026-08-20
+- Real projects: 20
+- Seed references: 17
+- Total entries: 37
+- Last updated: 2026-08-20
 
-## 按场景分类
+## By Scenario
 
-### APK / Android 逆向
+### APK / Android Reverse Engineering
 
-- [2026-08-20 Flutter AOT 服务端驱动广告去除（Blutter + 等长字符串替换）](./2026-08-20_apk-flutter-banner-ad-removal.md)
+- [2026-08-20 Flutter AOT server-driven ad removal (Blutter + equal-length string replacement)](./2026-08-20_apk-flutter-banner-ad-removal.md)
 - [2026-05-15-cellular-pro-mumu-ksad-fragment-fix](./2026-05-15-cellular-pro-mumu-ksad-fragment-fix.md)
-- [[种子] seed-008_apk-okhttp-ssl-pin-bypass](./seed-008_apk-okhttp-ssl-pin-bypass.md)
+- [[Seed] seed-008_apk-okhttp-ssl-pin-bypass](./seed-008_apk-okhttp-ssl-pin-bypass.md)
 
-### 二进制 / 固件 / CTF
+### Binary / Firmware / CTF
 
 - [2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
-- [2026-07-22 Electron Bytenode 特权更新链分析](./2026-07-22_electron-bytenode-privileged-update-chain.md)
+- [2026-07-22 Electron Bytenode privileged update chain analysis](./2026-07-22_electron-bytenode-privileged-update-chain.md)
 - [2026-07-14_android-arm64-self-extract-source-recovery](./2026-07-14_android-arm64-self-extract-source-recovery.md)
 - [2026-05-15_lumine-go-reverse](./2026-05-15_lumine-go-reverse.md)
-- [[种子] seed-001_elf-packed-loader](./seed-001_elf-packed-loader.md)
-- [[种子] seed-002_go-malware-stripped](./seed-002_go-malware-stripped.md)
-- [[种子] seed-010_ctf-pwn-rop-x64](./seed-010_ctf-pwn-rop-x64.md)
-- [[种子] seed-011_pcap-protocol-reverse](./seed-011_pcap-protocol-reverse.md)
-- [[种子] seed-014_unity-il2cpp-reverse](./seed-014_unity-il2cpp-reverse.md)
-- [[种子] seed-015_iot-firmware-uart](./seed-015_iot-firmware-uart.md)
+- [[Seed] seed-001_elf-packed-loader](./seed-001_elf-packed-loader.md)
+- [[Seed] seed-002_go-malware-stripped](./seed-002_go-malware-stripped.md)
+- [[Seed] seed-010_ctf-pwn-rop-x64](./seed-010_ctf-pwn-rop-x64.md)
+- [[Seed] seed-011_pcap-protocol-reverse](./seed-011_pcap-protocol-reverse.md)
+- [[Seed] seed-014_unity-il2cpp-reverse](./seed-014_unity-il2cpp-reverse.md)
+- [[Seed] seed-015_iot-firmware-uart](./seed-015_iot-firmware-uart.md)
 
-### Web / API / 渗透测试
+### Web / API / Penetration Testing
 
-- [2026-08-01 Next.js CDK 契约保真本地重建](./2026-08-01_nextjs-cdk-contract-faithful-local-reconstruction.md)
-- [2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover: .NET CMS 通用加密 oracle、公开密文模板消费者、完整 STL/模板解析、原始 SQL `UPDATE RETURNING`、官方管理员验证器新旧口令差分与隔离 PostgreSQL 清理闭环](./2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover.md)
+- [2026-08-01 Next.js CDK contract-faithful local reconstruction](./2026-08-01_nextjs-cdk-contract-faithful-local-reconstruction.md)
+- [2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover: .NET CMS generic encryption oracle, public ciphertext template consumer, complete STL/template parsing, raw SQL `UPDATE RETURNING`, official administrator validator old/new password differential, and isolated PostgreSQL cleanup loop](./2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover.md)
 
 - [2026-07-18_gin-juice-client-friction](./2026-07-18_gin-juice-client-friction.md)
 - [2026-07-05_dsl-vm-captcha-reverse](./2026-07-05_dsl-vm-captcha-reverse.md)
@@ -44,64 +44,64 @@
 - [2026-05-25_pentest-cf-access-sibling-subdomain-cookie-poisoning](./2026-05-25_pentest-cf-access-sibling-subdomain-cookie-poisoning.md)
 - [2026-05-17_pentest-vue-spa-actuator-leak](./2026-05-17_pentest-vue-spa-actuator-leak.md)
 - [2026-05-16_pentest-personalblog-fun-mass-assignment](./2026-05-16_pentest-personalblog-fun-mass-assignment.md)
-- [[种子] seed-003_web-api-auth-bypass](./seed-003_web-api-auth-bypass.md)
-- [[种子] seed-004_js-sign-webpack](./seed-004_js-sign-webpack.md)
-- [[种子] seed-006_ssrf-cloud-metadata](./seed-006_ssrf-cloud-metadata.md)
-- [[种子] seed-017_xxe-oob-exfil](./seed-017_xxe-oob-exfil.md)
+- [[Seed] seed-003_web-api-auth-bypass](./seed-003_web-api-auth-bypass.md)
+- [[Seed] seed-004_js-sign-webpack](./seed-004_js-sign-webpack.md)
+- [[Seed] seed-006_ssrf-cloud-metadata](./seed-006_ssrf-cloud-metadata.md)
+- [[Seed] seed-017_xxe-oob-exfil](./seed-017_xxe-oob-exfil.md)
 
-### 企业内网 / 云安全
+### Enterprise Internal Network / Cloud Security
 
-- [[种子] seed-005_ad-certipy-esc1](./seed-005_ad-certipy-esc1.md)
-- [[种子] seed-007_ntlm-relay-coercer](./seed-007_ntlm-relay-coercer.md)
-- [[种子] seed-013_kerberoasting-spn](./seed-013_kerberoasting-spn.md)
-- [[种子] seed-016_k8s-container-escape](./seed-016_k8s-container-escape.md)
+- [[Seed] seed-005_ad-certipy-esc1](./seed-005_ad-certipy-esc1.md)
+- [[Seed] seed-007_ntlm-relay-coercer](./seed-007_ntlm-relay-coercer.md)
+- [[Seed] seed-013_kerberoasting-spn](./seed-013_kerberoasting-spn.md)
+- [[Seed] seed-016_k8s-container-escape](./seed-016_k8s-container-escape.md)
 
-### iOS 逆向
+### iOS Reverse Engineering
 
-- [[种子] seed-009_ios-jailbr&#101;ak-detect-bypass](./seed-009_ios-jailbr%65ak-detect-bypass.md)
+- [[Seed] seed-009_ios-jailbr&#101;ak-detect-bypass](./seed-009_ios-jailbr%65ak-detect-bypass.md)
 
-### 工具链与环境
+### Toolchain and Environment
 
-- [2026-08-17 tool-index r2 fallback 与 powershell/pwsh 子进程入口统一](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
-- [2026-08-14 Windows PowerShell 原生命令退出码 PR 审查](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
-- [2026-08-08 平台无关结构化路由 PR 集成](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
+- [2026-08-17 tool-index r2 fallback and unified powershell/pwsh subprocess entry](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
+- [2026-08-14 Windows PowerShell native command exit-code PR review](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
+- [2026-08-08 Platform-neutral structured routing PR integration](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 - [2026-07-20_reverse-toolchain-windows-bootstrap](./2026-07-20_reverse-toolchain-windows-bootstrap.md)
 
-### 其他
+### Other
 
-- [2026-08-08 开放 PR 价值分级与安全集成](./2026-08-08_pr-value-triage-and-safe-integration.md)
-- [[种子] seed-012_log4shell-jndi-rce](./seed-012_log4shell-jndi-rce.md)
+- [2026-08-08 Open PR value triage and safe integration](./2026-08-08_pr-value-triage-and-safe-integration.md)
+- [[Seed] seed-012_log4shell-jndi-rce](./seed-012_log4shell-jndi-rce.md)
 
-## 高频成功模式（按技术）
+## High-Frequency Success Patterns (By Technique)
 
-### 平台无关路由与供应链门禁
+### Platform-Neutral Routing and Supply-Chain Gating
 
-- [Resolve-ReverseHostExe 统一子进程入口、r2 .bat fallback、StrictMode hashtable 安全访问](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
-- [原生命令后立即保存退出码、Windows PowerShell 5.1 实宿主复现、PR head 固定](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
-- [单一 routing.json、多入口 parity、实际安装命令 pin](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
+- [Resolve-ReverseHostExe unified subprocess entry, r2 .bat fallback, StrictMode-safe hashtable access](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
+- [Save the exit code immediately after native commands, Windows PowerShell 5.1 real-host reproduction, pinned PR head](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
+- [Single routing.json, multi-entry parity, pinned actual install commands](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 
-### 固件自定义封装
+### Firmware Custom Packaging
 
-- [1 KiB 自带掩码 ROR/XOR、Cortex-M 向量 crib、跨固件验证](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
+- [1 KiB self-keyed mask ROR/XOR, Cortex-M vector crib, cross-firmware validation](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
 
-## 实体倒排（按目标特征）
+## Entity Inverted Index (By Target Characteristics)
 
-### 多宿主安全技能路由包
+### Multi-Host Security Skill Routing Package
 
-- [核心/适配器边界与大 PR 选择性集成](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
+- [Core/adapter boundary and selective integration of a large PR](./2026-08-08_client-neutral-structured-routing-pr-integration.md)
 
-### Windows PowerShell 供应链引导脚本
+### Windows PowerShell Supply-Chain Bootstrap Scripts
 
-- [powershell/pwsh 子进程入口统一、tool-index .bat fallback、pin gate StrictMode](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
-- [原生命令输出经过对象管道后退出码失真](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
+- [Unified powershell/pwsh subprocess entry, tool-index .bat fallback, pin-gate StrictMode](./2026-08-17_tool-index-r2-fallback-powershell-pwsh-host-fix.md)
+- [Native command exit codes distorted after passing through the object pipeline](./2026-08-14_windows-powershell-native-exit-code-pr-review.md)
 
-### Cortex-M USB MSC 升级器
+### Cortex-M USB MSC Upgrader
 
-- [应用/驻留 bootloader 边界与虚拟磁盘写入链路](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
+- [Application/resident bootloader boundary and virtual-disk write chain](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
 
-## 使用说明
+## Usage Notes
 
-1. 新任务开始前，先按场景分类查找是否有相似记录。
-2. 命中真实项目时，优先复用已验证的流程和踩坑记录。
-3. 命中种子案例时，只作为方法参考，不视为真实成功记录。
-4. 新增经验后，请按 PR 流程更新本索引，避免直接改动共享主线。
+1. Before starting a new task, search the scenario categories first for similar records.
+2. On a real-project hit, prefer reusing the validated flow and pitfall log.
+3. On a seed-case hit, treat it as a method reference only, never as a real success record.
+4. After adding new experience, update this index via the PR flow; avoid editing the shared mainline directly.

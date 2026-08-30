@@ -1,58 +1,85 @@
 #!/usr/bin/env bash
-# ida-start.sh — 启动 IDA Pro MCP HTTP 服务 (Linux 版)
-# 等价于 Windows 版的 ida-reverse/scripts/start.ps1
+# ida-start.sh — Kali Linux edition: start the IDA MCP service
+# Equivalent to the Windows edition's ida-start.ps1
+#
+# Usage:
+#   bash ida-start.sh [options]
+#
+# Options:
+#   --help              Show help
+#   --check             Check the current state only
+#   --stop              Stop the service
 
 set -euo pipefail
 
-# ─── 配置（根据你的实际安装修改） ─────────────────────────────────────────────────────
+# ─── Paths ─────────────────────────────────────────────────────────────────────
 
-IDADIR="${IDADIR:-/opt/idapro}"
-MCP_PORT="${IDA_MCP_PORT:-13337}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+KALI_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$KALI_DIR/.." && pwd)"
 
-# idalib-mcp 可执行文件路径（pip install 后通常在 PATH 中）
-MCP_SERVER_CMD="${IDA_MCP_SERVER:-ida-pro-mcp}"
+# ─── Helpers ───────────────────────────────────────────────────────────────────
 
-# ─── 检查 ─────────────────────────────────────────────────────────────────────────
+log_info() { echo -e "\033[36m[INFO]\033[0m $*"; }
+log_ok() { echo -e "\033[32m[OK]\033[0m $*"; }
+log_warn() { echo -e "\033[33m[WARN]\033[0m $*"; }
+log_err() { echo -e "\033[31m[ERR]\033[0m $*"; }
 
-if [[ ! -d "$IDADIR" ]]; then
-    echo "ERR: IDADIR 不存在: $IDADIR"
-    echo "请设置环境变量 IDADIR 指向 IDA Pro 安装目录"
-    exit 1
-fi
+# ─── Service startup ───────────────────────────────────────────────────────────
 
-if ! command -v "$MCP_SERVER_CMD" &>/dev/null; then
-    echo "ERR: $MCP_SERVER_CMD 未找到"
-    echo "请先运行: pip3 install git+https://github.com/mrexodia/ida-pro-mcp.git"
-    exit 1
-fi
-
-# ─── 杀掉旧进程 ───────────────────────────────────────────────────────────────────
-
-pkill -f "ida-pro-mcp" 2>/dev/null || true
-sleep 1
-
-# ─── 启动服务 ──────────────────────────────────────────────────────────────────────
-
-echo "INFO: 启动 IDA MCP HTTP 服务 (port $MCP_PORT) ..."
-export IDADIR
-
-nohup "$MCP_SERVER_CMD" --port "$MCP_PORT" > /tmp/ida-mcp.log 2>&1 &
-MCP_PID=$!
-
-# ─── 等待就绪 ──────────────────────────────────────────────────────────────────────
-
-TIMEOUT=45
-ELAPSED=0
-
-while [[ $ELAPSED -lt $TIMEOUT ]]; do
-    if nc -z 127.0.0.1 "$MCP_PORT" 2>/dev/null; then
-        echo "OK: IDA MCP 服务已就绪 (PID=$MCP_PID, port=$MCP_PORT)"
-        exit 0
+start_service() {
+    # Check whether the service is already running
+    if nc -z 127.0.0.1 13337 2>/dev/null; then
+        log_ok "IDA MCP already running (port 13337)"
+        return 0
     fi
-    sleep 2
-    ELAPSED=$((ELAPSED + 2))
-done
 
-echo "ERR: 超时 ${TIMEOUT}s，服务未就绪"
-echo "查看日志: /tmp/ida-mcp.log"
-exit 1
+    log_info "Starting IDA MCP ..."
+
+    # Start the service
+    if ! bash ida-daemon.sh start; then
+        log_err "Failed to start the IDA daemon"
+        return 1
+    fi
+
+    log_ok "IDA MCP started"
+}
+
+check_state() {
+    log_info "Current IDA MCP state:"
+
+    # Check whether the port is listening
+    if nc -z 127.0.0.1 13337 2>/dev/null; then
+        log_ok "Port 13337 is listening"
+    else
+        log_warn "Port 13337 is not listening"
+    fi
+
+    # Check whether the IDA Pro installation is present
+    if [[ -d /opt/idapro ]]; then
+        log_ok "IDA Pro installation present"
+    else
+        log_warn "IDA Pro installation missing"
+    fi
+
+    # Check MCP status
+    if command -v ida-pro-mcp &>/dev/null; then
+        log_ok "ida-pro-mcp available"
+    else
+        log_warn "ida-pro-mcp not installed"
+    fi
+}
+
+# ─── Main entry ────────────────────────────────────────────────────────────────
+
+case "${1:-}" in
+    --help|-h)
+        show_help
+        ;;
+    --check)
+        check_state
+        ;;
+    *)
+        start_service
+        ;;
+esac

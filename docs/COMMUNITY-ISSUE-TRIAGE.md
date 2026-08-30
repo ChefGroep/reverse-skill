@@ -5,7 +5,7 @@ This document records which community concerns can be addressed in-repository an
 | Issue | Assessment | Repository action |
 |---|---|---|
 | #21, #86 | AI safety refusal for a particular target | Added authorization-first and defensive-use guidance; this cannot override a client safety policy. |
-| #44, #61 | Installation and usage questions | Added `QUICKSTART_zh.md` and linked it from both READMEs. |
+| #44, #61 | Installation and usage questions | Added a quick-start guide (`QUICKSTART.md`) and linked it from both READMEs. |
 | #47 | Codex/plugin integration request | The project remains client-neutral; client-specific plugin work needs an agreed integration contract. |
 | #51 | Prefer uv over pip | Added correct guidance for `uv tool install` and `uv pip` without unsafe mechanical replacement. Bootstrap still uses pinned pipx. |
 | #58, #60 | Low-information reports | Need a reproducible sample, environment, and exact error before a code fix is possible. |

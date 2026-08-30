@@ -1,39 +1,39 @@
-# 现代 Web 靶场摩擦 → skill 加固
+# Modern Web Lab Friction → Skill Hardening
 
-> 日期：2026-07-18  
-> 场景：合法公开靶场（PortSwigger 类 scanner-eval / OWASP Juice Shop demo）  
-> 脱敏：无真实业务域名利用细节
+> Date: 2026-07-18  
+> Scenario: legitimate public lab (PortSwigger-style scanner-eval / OWASP Juice Shop demo)  
+> Desensitized: no real business-domain exploit details
 
-## 结论（给下次 Agent）
+## Conclusion (for the next Agent)
 
-**未打穿 ≠ 包无效。** 必须交付：surface map、sink 列表、门闩原因、Evidence(observed|validated)。  
-失败要写进 timeline，并反哺 playbook。
+**Not fully breaching ≠ the package is invalid.** You must deliver: a surface map, a sink list, the reason for each blocker, Evidence(observed|validated).  
+Failures go into the timeline and feed back into the playbook.
 
-## 踩坑
+## Pitfalls
 
-| 坑 | 现象 | 修复/纪律 |
+| Pitfall | Symptom | Fix/Discipline |
 |----|------|-----------|
-| case-init 授权被污染 | `-AuthGranted` 后 status 变成奇怪字符串 | 仅允许 pending/granted/denied/unknown；`PSBoundParameters` 判断 AuthStatus |
-| lab_only 不 ready | network=lab_only 时 ready_for_act 假 | lab_only + granted + assets → ready |
-| Windows curl `[]` | `bad range in position` | **必须** `curl.exe --globoff` |
-| append-evidence 特殊字符 | RawExcerpt 含引号/XML 报错 | block 缩进 + 去控制字符 |
-| 公网 demo 503 | Juice Shop Heroku 挂 | 换本地 Docker 或其它合法靶；勿死磕 |
-| DOM XSS 假阳性 | 有 innerHTML sink 就报 validated | 需 200 非数字 body 才可 exploit；否则 observed |
-| agent-browser ref 过期 | click 失败 | 页面变化后重新 snapshot |
+| case-init authorization gets polluted | status becomes a weird string after `-AuthGranted` | Only allow pending/granted/denied/unknown; validate AuthStatus via `PSBoundParameters` |
+| lab_only not ready | ready_for_act is false when network=lab_only | lab_only + granted + assets → ready |
+| Windows curl `[]` | `bad range in position` | **Must** use `curl.exe --globoff` |
+| append-evidence special characters | RawExcerpt containing quotes/XML throws errors | Block indentation + strip control characters |
+| Public demo 503 | Juice Shop on Heroku is down | Switch to local Docker or another legitimate lab; don't grind on it |
+| DOM XSS false positive | Any innerHTML sink gets reported as validated | Exploitation requires a 200 with a non-numeric body; otherwise observed |
+| agent-browser ref stale | click fails | Re-snapshot after the page changes |
 
-## 可复用模式
+## Reusable Patterns
 
-1. Surface → Sink → Chain（见 `pentest-tools/references/client-side-lab-playbook.md`）  
-2. 库存类 `innerHTML = fetchBody`：先证 sink，再找 200 非数字  
-3. 静态 rg sink + agent-browser eval 双证  
+1. Surface → Sink → Chain (see `pentest-tools/references/client-side-lab-playbook.md`)  
+2. Stock-style `innerHTML = fetchBody`: prove the sink first, then find a 200 with a non-numeric body  
+3. Static rg sink + agent-browser eval as dual evidence  
 
-## 工具链
+## Toolchain
 
 - case-init / case-guard / append-evidence / smoke  
-- agent-browser（CDP）  
+- agent-browser (CDP)  
 - curl --globoff  
 
-## 环境
+## Environment
 
 - Windows + PowerShell 5.1  
-- Docker Desktop 可能 daemon 未就绪  
+- Docker Desktop daemon may not be ready  

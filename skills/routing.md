@@ -24,7 +24,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | JavaScript / Web frontend | `js-reverse/` — 5-stage workflow | anything-analyzer MCP browser tools, or jshookmcp CDP/Hook |
 | HTTP capture / browser sampling / request replay | anything-analyzer MCP (23816) | Reqable MCP, `js-reverse/`, jshookmcp, or `competition-web-runtime/` |
 | Firmware / IoT | `firmware-pentest/` — extract → EMBA → emulate → fuzz | `reverse-engineering/platforms.md` — static RE only |
-| WASM / Python bytecode / .NET / **DSL VM / 自定义虚拟机** | `reverse-engineering/dsl-vm-reverse/SKILL.md` — IIFE + switch-case opcode JS VM | `reverse-engineering/languages.md` — real WASM binaries |
+| WASM / Python bytecode / .NET / **DSL VM / custom VM** | `reverse-engineering/dsl-vm-reverse/SKILL.md` — IIFE + switch-case opcode JS VM | `reverse-engineering/languages.md` — real WASM binaries |
 | Malware / virus sample | `malware-analysis/SKILL.md` — six-stage + YARA/Sigma | `ida-reverse/` deep dive |
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | `mobile-reverse/` for iOS-specific |
 | Game (Unity) | `reverse-engineering/` — engine reverse, anti-cheat, IL2CPP/Mono (see seed-014) | `ida-reverse/` deep analysis |
@@ -50,7 +50,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | Blue team / threat hunt | `threat-hunting/` | sample IOC → `malware-analysis/` |
 | Ghidra (no IDA) | `ghidra-reverse/` | `ida-reverse/` if IDA MCP available |
 
-| OLLVM-obfuscated binary (控制流平坦化/虚假控制流/MBA) | `reverse-engineering/references/ollvm-deobfuscation.md` — 完整脱密工作流 | obpo-plugin / d810-ng (IDA) / ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) / angr / deollvm (ARM64)
+| OLLVM-obfuscated binary (control-flow flattening / fake control flow / MBA) | `reverse-engineering/references/ollvm-deobfuscation.md` — full deobfuscation workflow | obpo-plugin / d810-ng (IDA) / ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) / angr / deollvm (ARM64) |
 | Cryptography / encryption algorithms | `reverse-engineering/patterns*.md` — crypto patterns | `js-reverse/` (if frontend crypto) |
 | Protocol reverse / custom protocol | `reverse-engineering/platforms.md` — network protocols | `js-reverse/` (if WebSocket/HTTP) |
 | Go / Rust binary | `reverse-engineering/languages-compiled.md` + `go-reverse.md` | `ida-reverse/` or `radare2/` |
@@ -72,9 +72,9 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 
 | User Says | Route To |
 |-----------|----------|
-| "DSL VM / 自定义指令集 / 风控引擎逆向" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — IIFE + switch-case opcode |
-| "fireye / fireyejs / getToken 逆向" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — runtime capture |
-| "582KB JS 文件不是 WASM / 大 JS 文件逆向" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — classify DSL VM first |
+| "DSL VM / custom instruction set / risk-control engine RE" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — IIFE + switch-case opcode |
+| "fireye / fireyejs / getToken RE" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — runtime capture |
+| "582KB JS file is not WASM / large JS file RE" | `reverse-engineering/dsl-vm-reverse/SKILL.md` — classify DSL VM first |
 | "decompile / IDA analyze" | `ida-reverse/SKILL.md` — IDA MCP workflow |
 | "recover source / disassemble" | `reverse-engineering/SKILL.md` + `ida-reverse/` |
 | "Frida hook / dynamic inject" | `reverse-engineering/tools-dynamic.md` — Frida section |
@@ -85,26 +85,31 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "JEB / JEB Pro" | `apk-reverse/SKILL.md` — licensed Android / ARM cross-check; verify local install first |
 | "APK unpack / repack / modify smali" | `apk-reverse/SKILL.md` — decode→rebuild-sign-install |
 | "bypass anti-debug / anti-detection" | `reverse-engineering/anti-analysis.md` |
-| "OLLVM deobfuscate / 控制流平坦化去除 / deflat / 脱混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — 完整工作流 |
-| "obpo / obpo-plugin / d810-ng / d810" | `reverse-engineering/references/ollvm-deobfuscation.md` — 现代反混淆工具 |
-| "Hikari / Polaris / Pluto / O-MVLL / Arkari / goron 混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — 现代 OLLVM 变种处理 |
-| "Tigress / Hodur / Approov 混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — d810-ng 专用 unflattener |
-| "Trap Angr / angr 路径爆炸" | `reverse-engineering/references/ollvm-deobfuscation.md` — Pluto/Polaris 陷阱处理 |
-| "BR 混淆 / 间接分支混淆去除" | `reverse-engineering/references/ollvm-deobfuscation.md` — DeObfBR + 数据段只读 |
+| "OLLVM deobfuscate / remove control-flow flattening / deflat / deobfuscate" | `reverse-engineering/references/ollvm-deobfuscation.md` — full workflow |
+| "obpo / obpo-plugin / d810-ng / d810" | `reverse-engineering/references/ollvm-deobfuscation.md` — modern deobfuscation tools |
+| "Hikari / Polaris / Pluto / O-MVLL / Arkari / goron obfuscation" | `reverse-engineering/references/ollvm-deobfuscation.md` — modern OLLVM variant handling |
+| "Tigress / Hodur / Approov obfuscation" | `reverse-engineering/references/ollvm-deobfuscation.md` — d810-ng dedicated unflattener |
+| "tangle with angr / angr path explosion" | `reverse-engineering/references/ollvm-deobfuscation.md` — Pluto/Polaris trap handling |
+| "BR obfuscation / indirect-branch obfuscation removal" | `reverse-engineering/references/ollvm-deobfuscation.md` — DeObfBR + read-only data segment |
 | "what obfuscation / VM is this" | `reverse-engineering/patterns*.md` — match by pattern |
 | "Go/Rust/Swift reverse" | `reverse-engineering/languages-compiled.md` + `go-reverse.md` |
 | "kernel driver / Rootkit / LKM" | `reverse-engineering/kernel-driver-reverse.md` |
+| "C++ vtable / virtual functions / class recovery" | `reverse-engineering/kernel-driver-reverse.md` — C/C++ pattern recognition |
+| "IOCTL / DeviceIoControl" | `reverse-engineering/kernel-driver-reverse.md` — Windows driver analysis |
 | "Python bytecode / pyc" | `reverse-engineering/languages.md` — Python section |
 | "symbol execution / angr" | `reverse-engineering/tools-dynamic.md` — angr section |
+| "emulated execution / Unicorn" | `reverse-engineering/tools.md` — Unicorn section |
 | "patch environment / Node reproduce" | `js-reverse/references/env-patching.md` |
 | "CTF challenge / competition reverse" | `ctf-sandbox/SKILL.md` → sidecar orchestrator |
-| "CTF ZIP / PKZIP / bkcrack / 压缩包明文攻击" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
+| "CTF ZIP / PKZIP / bkcrack / known-plaintext archive attack" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
 | "write report / documentation" | `docs-generator/` — technical documentation |
 | "review case / evidence chain / traceability" | `case-review/`: read-only Evidence Graph Review |
 | "write writeup" | `docs-generator/` — CTF writeup template |
 | "open webpage / browser automation / fill form" | `browser-automation/SKILL.md` — Playwright |
 | "crawl page / screenshot / auto login" | `browser-automation/SKILL.md` |
 | "desktop automation / Windows automation" | `browser-automation/SKILL.md` — OpenReverse |
+| "Playwright / headless" | `browser-automation/SKILL.md` — browser automation |
+| "UIA / CUA / desktop GUI operation" | `browser-automation/SKILL.md` — OpenReverse (UIA/CUA mode) |
 | "game reverse / anti-cheat / hack analysis" | `reverse-engineering/SKILL.md` — game reverse (IL2CPP/Unity/Cheat Engine) |
 | "Unity / IL2CPP / Mono" | `reverse-engineering/SKILL.md` — Unity + `seed-014_unity-il2cpp-reverse.md` |
 | "Cheat Engine / memory scan" | `reverse-engineering/SKILL.md` — Cheat Engine memory analysis |
@@ -140,35 +145,78 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "C2 framework / adversary simulation" | `pentest-tools/SKILL.md` — AdaptixC2 |
 | "WiFi attack / wireless pentest" | `pentest-tools/SKILL.md` — Fluxion + aircrack-ng |
 | "NTLM relay / auth coercion" | `pentest-tools/SKILL.md` — Coercer |
+| "Responder / LLMNR poisoning / NBT-NS" | `pentest-tools/SKILL.md` — internal-network poisoning |
+| "BloodHound / AD paths / attack graph" | `pentest-tools/SKILL.md` — AD attack-path visualization |
+| "Certipy / AD CS / certificate attacks" | `pentest-tools/SKILL.md` — AD certificate services |
+| "wfuzz / parameter fuzzing / web fuzz" | `pentest-tools/SKILL.md` — web fuzzing |
+| "evil-winrm / WinRM / Windows remote" | `pentest-tools/SKILL.md` — evil-winrm-py |
+| "Atomic Red Team / detection testing" | `pentest-tools/SKILL.md` — Atomic-Operator |
 | "NetExec / CrackMapExec / nxc" | `pentest-tools/SKILL.md` — network service enumeration |
 | "AI auto pentest / MCP security" | `pentest-tools/SKILL.md` — HexStrike AI / MetasploitMCP |
 | "Swarm / swarm pentest / autonomous scan" | `pentest-tools/SKILL.md` — Pentest Swarm AI |
+| "Bug Bounty automation / continuous monitoring" | `pentest-tools/SKILL.md` — Pentest Swarm AI playbook: bug-bounty |
+| "attack surface management / ASM" | `pentest-tools/SKILL.md` — Pentest Swarm AI playbook: external-asm |
 | "red team / HW / attack exercise" | `attack-chain/SKILL.md` — full attack chain orchestration |
 | "initial breach / boundary breach" | `attack-chain/SKILL.md` — boundary breach phase |
 | "close-range pentest / BadUSB / WiFi phishing" | `attack-chain/SKILL.md` — close-range section |
-| "EDR bypass / evasion / AV bypass" | `edr-bypass-re/SKILL.md` |
-| "phishing / social engineering" | `email-security/SKILL.md` |
+| "payload delivery evasion / real-world EDR bypass / shellcode loader" | `attack-chain/SKILL.md` — EDR/AV bypass in the delivery phase |
+| "phishing / social engineering" | `attack-chain/SKILL.md` — phishing attack section |
 | "supply chain attack" | `attack-chain/SKILL.md` — supply chain section |
 | "trace cleanup / anti-forensics" | `attack-chain/SKILL.md` — cleanup section |
 | "full pentest / end-to-end" | `attack-chain/SKILL.md` — full chain planning |
 | "from external to domain controller" | `attack-chain/SKILL.md` — cross-phase path orchestration |
 | "attack surface assessment / path planning" | `attack-chain/SKILL.md` — path planning decision tree |
 | "got shell, what next / post-exploitation" | `attack-chain/SKILL.md` — plan from current foothold |
+| "internal-network full flow" | `attack-chain/SKILL.md` — lateral movement + privesc + domain attacks |
 | "BurpSuite / Burp proxy / intercept" | `pentest-tools/SKILL.md` + `references/burpsuite-mcp-guide.md` |
 | "Burp MCP / proxy history analysis" | `pentest-tools/references/burpsuite-mcp-guide.md` — 78 tools |
 | "Intruder brute force / Repeater replay" | `pentest-tools/references/burpsuite-mcp-guide.md` |
 | "Collaborator / OOB testing" | `pentest-tools/references/burpsuite-mcp-guide.md` |
 | "API security / GraphQL / JWT attack" | `api-security/SKILL.md` — REST/GraphQL/JWT/OAuth |
+| "GraphQL security / introspection attack / batch-query bypass" | `api-security/references/rest-graphql-testing.md` — GraphQL track |
+| "JWT attack / OAuth bypass / alg:none" | `api-security/references/jwt-oauth-testing.md` — JWT + OAuth testing |
+| "BOLA / IDOR / BFLA / object-level authorization bypass" | `api-security/SKILL.md` — Phase 3 authorization testing |
 | "supply chain security / SBOM / SCA" | `supply-chain-security/SKILL.md` — Trivy/Syft/Gitleaks |
+| "CI/CD security / pipeline audit / build integrity" | `supply-chain-security/references/cicd-pipeline-security.md` — pipeline security |
+| "container security / image scanning / Trivy / Cosign" | `supply-chain-security/SKILL.md` — container security section |
+| "gitleaks / secret scanning / credential leaks" | `supply-chain-security/SKILL.md` — CI/CD pipeline security |
 | "iOS reverse / IPA / Mach-O" | `mobile-reverse/SKILL.md` — class-dump/Hopper/Frida iOS |
 | "Objection / SSL Pinning bypass" | `mobile-reverse/SKILL.md` — dynamic instrumentation |
+| "root detection bypass / jailbreak detection bypass / mobile anti-debug" | `mobile-reverse/references/anti-detection-bypass.md` — multi-layer bypass |
+| "mobile security testing / MSTG / OWASP Mobile" | `mobile-reverse/SKILL.md` — OWASP MASTG methodology |
 | "YARA / malware detection rules" | `malware-analysis/SKILL.md` — YARA/Sigma/IOC |
+| "sandbox analysis / CAPE / Joe Sandbox" | `malware-analysis/references/sandbox-orchestration.md` — sandbox orchestration |
+| "anti-analysis / anti-sandbox / anti-debug / VM detection" | `malware-analysis/references/anti-analysis-techniques.md` — 94 techniques |
+| "IOC extraction / threat intelligence / malware analysis" | `malware-analysis/SKILL.md` — six-stage analysis flow |
+| "AI decompilation / LLM reverse / neural decompilation" | `reverse-engineering/references/ai-assisted-re.md` — AI-assisted RE |
 | "N-day / patch diff / CVE reproduction" | `patch-diff-exploit/SKILL.md` |
-| "MBA simplification / mixed boolean-arithmetic / 表达式化简" | `reverse-engineering/references/ollvm-deobfuscation.md` — SiMBA/D-810 |
-| "opaque predicate / 不透明谓词去除" | `reverse-engineering/references/ollvm-deobfuscation.md` — 符号执行去除 |
-| "Hikari deobfuscate / 字符串加密恢复" | `reverse-engineering/references/ollvm-deobfuscation.md` — Hikari 变种处理 |
+| "Patch Tuesday / MSRC / Microsoft Update Catalog" | `patch-diff-exploit/references/patch-tuesday-workflow.md` |
+| "ghidriff / Diaphora / DeepDiff (attack side)" | `patch-diff-exploit/references/diff-tools-comparison.md` |
+| "pwn / stack overflow / heap / kernel / exploit writing" | `pwn-chain/SKILL.md` — RE→exploit full pipeline |
+| "heap exploitation / tcache / fastbin / unsorted bin" | `pwn-chain/references/heap-pwn.md` |
+| "kernel pwn / kernel privesc / modprobe_path / commit_creds" | `pwn-chain/references/kernel-pwn.md` |
+| "pwntools / GEF / pwndbg / one_gadget / libc-database" | `pwn-chain/SKILL.md` |
+| "firmware pentest / router firmware / IoT exploitation" | `firmware-pentest/SKILL.md` — from extraction to physical device |
+| "binwalk / unblob / SquashFS / UBI / JFFS2" | `firmware-pentest/references/extraction-methodology.md` |
+| "EMBA / automated firmware audit / cve-bin-tool" | `firmware-pentest/references/emba-automated-analysis.md` |
+| "Firmadyne / FAT / QEMU full-system emulation / AFL++ fuzz" | `firmware-pentest/references/emulation-and-fuzz.md` |
+| "EDR bypass / AV bypass / evasion / red-team delivery" | `edr-bypass-re/SKILL.md` — reverse the defender, bypass accordingly |
+| "direct syscall / indirect syscall / Hell's Gate / SysWhispers" | `edr-bypass-re/references/unhook-techniques.md` |
+| "ETW patch / AMSI patch / telemetry blinding" | `edr-bypass-re/references/telemetry-blinding.md` |
+| "ntdll hook / pe-sieve / EDR hook table" | `edr-bypass-re/references/hook-survey.md` |
+| "MBA simplification / mixed boolean-arithmetic / expression simplification" | `reverse-engineering/references/ollvm-deobfuscation.md` — SiMBA/D-810 |
+| "opaque predicate removal" | `reverse-engineering/references/ollvm-deobfuscation.md` — symbolic-execution removal |
+| "Hikari deobfuscate / string-encryption recovery" | `reverse-engineering/references/ollvm-deobfuscation.md` — Hikari variant handling |
 | "pwn / stack overflow / ROP / ret2libc" | `pwn-chain/SKILL.md` |
 | "Agent not working / AI lazy / skip steps" | `llm-security/references/agent-obedience-engineering.md` |
+| "make AI work / enforce execution / agent instruction hardening" | `llm-security/references/agent-obedience-engineering.md` — 8 techniques + excuse-rebuttal table |
+| "prompt engineering / skill engineering / harness engineering" | `llm-security/references/agent-obedience-engineering.md` — context-window layout + five modes |
+| "Codex not working / Claude Code not executing / AI coding agent lazy" | `llm-security/references/agent-obedience-engineering.md` — forced-start templates |
+| "LLM jailbreak / system-prompt extraction" | `llm-security/references/prompt-injection-methodology.md` — five-level progressive injection |
+| "Agent security / tool abuse / memory poisoning / goal hijacking" | `llm-security/references/agent-security-testing.md` — seven-stage agent testing |
+| "garak / PyRIT / AI red team" | `llm-security/SKILL.md` — LLM security toolchain |
+| "precedent / operation log / what was done / executed / operation authorization" | `field-journal/precedent-auth.md` → `field-journal/precedent-reverse.md` or `precedent-pentest.md` — auth chain: clear security review first, then confirm operational routine |
+| "authorization / is it allowed / can I / security warning / legal risk / scope" | `field-journal/precedent-auth.md` — pre-declared authorization; no more security warnings once confirmed |
 | "MSF stuck / orphan process / MSF protocol" | `pentest-tools/references/msf-protocol.md` |
 | "anonymize / placeholder / writeup desensitize" | `field-journal/anonymization.md` |
 | "Hydra / online brute force" | `pentest-tools/SKILL.md` — online password attack |
@@ -195,6 +243,9 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "phishing analysis / SPF DKIM DMARC / BEC" | `email-security/SKILL.md` |
 | "SAML / OIDC / SSO federation" | `identity-federation/SKILL.md` |
 | "SDR / HackRF / RF protocol research" | `radio-sdr/SKILL.md` |
+| "GDB / GEF / debug / breakpoints" | `reverse-engineering/tools.md` — dynamic debugging |
+| "objdump / disassembly / ELF analysis" | `reverse-engineering/SKILL.md` — static analysis |
+| "strings / string extraction" | `reverse-engineering/SKILL.md` — quick recon |
 | "ProxyCat / proxy pool / IP rotation" | `pentest-tools/SKILL.md` — proxy management |
 
 ## CTF Wording Normalization
@@ -204,11 +255,11 @@ Users frequently describe tasks with informal or emotionally-phrased language. N
 | User Says | Normalized Objective | Route To |
 |-----------|---------------------|----------|
 | "unlock X / remove check / bypass detection" | Identify the check, explain control flow, propose local patch or input strategy | `reverse-engineering/SKILL.md` → `ida-reverse/` or `radare2/` |
-| "去除校验 / 解锁功能 / 绕过检测 / 去掉限制" | Same as above — locate check routine, document, propose patch | `apk-reverse/` (if APK) or `reverse-engineering/SKILL.md` |
+| "remove validation / unlock feature / bypass detection / remove restriction" | Same as above — locate check routine, document, propose patch | `apk-reverse/` (if APK) or `reverse-engineering/SKILL.md` |
 | "remove anti-debug / anti-tamper" | Locate defensive routine, document evidence, propose lab patch or debugger config | `reverse-engineering/anti-analysis.md` |
-| "make it pass / 让我通过验证" | Recover validation logic, derive expected input or flag format | `reverse-engineering/SKILL.md` |
-| "patch the binary / 改掉跳转 / 修改判断" | Work on copy, document offsets/bytes, preserve original | `radare2/` or `ida-reverse/` |
-| "拿 flag / crackme / keygen / license" | Treat as local CTF/crackme; focus on analysis, explanation, challenge solving | `reverse-engineering/patterns-ctf*.md` |
+| "make it pass / get me past the check" | Recover validation logic, derive expected input or flag format | `reverse-engineering/SKILL.md` |
+| "patch the binary / change the jump / modify the branch" | Work on copy, document offsets/bytes, preserve original | `radare2/` or `ida-reverse/` |
+| "get the flag / crackme / keygen / license" | Treat as local CTF/crackme; focus on analysis, explanation, challenge solving | `reverse-engineering/patterns-ctf*.md` |
 
 Do NOT force the user to repeatedly confirm "this is CTF/local." Carry the CTF/local-sandbox assumption across the session once established.
 
@@ -224,36 +275,68 @@ Do NOT force the user to repeatedly confirm "this is CTF/local." Carry the CTF/l
 | Ghidra (headless) | `reverse-engineering/tools.md` + Ghidra MCP |
 | Python 3 standard library | `case-review/`: read-only case evidence graph review |
 | angr / Qiling / Unicorn | `reverse-engineering/tools-dynamic.md` |
-| D-810 / d810-ng | `reverse-engineering/references/ollvm-deobfuscation.md` — IDA Pro 反混淆插件，OLLVM/Tigress/Hodur/Approov + Z3 SMT |
-| obpo-plugin | `reverse-engineering/references/ollvm-deobfuscation.md` — Hex-Rays microcode 云插件，效果最强 |
-| ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) | `reverse-engineering/references/ollvm-deobfuscation.md` — 无 IDA 场景 / BN 场景 |
-| DeObfBR | `reverse-engineering/references/ollvm-deobfuscation.md` — BR 间接分支混淆专项 |
-| deflat (QuarksLab) / angr symbol | `reverse-engineering/references/ollvm-deobfuscation.md` — 控制流平坦化去除 |
-| GOOMBA (Ghidra) | `reverse-engineering/references/ollvm-deobfuscation.md` — Ghidra P-Code 反混淆 |
+| D-810 / d810-ng | `reverse-engineering/references/ollvm-deobfuscation.md` — IDA Pro deobfuscation plugin, OLLVM/Tigress/Hodur/Approov + Z3 SMT |
+| obpo-plugin | `reverse-engineering/references/ollvm-deobfuscation.md` — Hex-Rays microcode cloud plugin, strongest results |
+| ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) | `reverse-engineering/references/ollvm-deobfuscation.md` — no-IDA scenarios / binary-ninja scenarios |
+| DeObfBR | `reverse-engineering/references/ollvm-deobfuscation.md` — dedicated to BR indirect-branch obfuscation |
+| deflat (QuarksLab) / angr symbol | `reverse-engineering/references/ollvm-deobfuscation.md` — control-flow flattening removal |
+| GOOMBA (Ghidra) | `reverse-engineering/references/ollvm-deobfuscation.md` — Ghidra P-Code deobfuscation |
 | BinDiff / Diaphora | `reverse-engineering/tools-advanced.md` |
+| LLM symbol migration / BinDiff alternative | `binary-diff/` — cross-version batch migration |
+| BinDiff / Diaphora / ghidriff / DeepDiff (attack side) | `patch-diff-exploit/` — from patch to vulnerability point → weaponization |
+| binwalk v3 / unblob / EMBA / Firmadyne / FAT | `firmware-pentest/` — firmware extraction / automated audit / emulation |
+| pwntools / GEF / pwndbg / ROPgadget / Ropper / one_gadget / libc-database | `pwn-chain/` — RE → working exploit |
+| SysWhispers3 / Hell's Gate / pe-sieve / API Monitor | `edr-bypass-re/` — EDR bypass research and implementation |
 | anything-analyzer MCP | Port 23816 MCP server (browser + HTTP capture + AI analysis) |
 | jshookmcp | `js-reverse/` enhancement MCP for browser/CDP/Hook/Network/SourceMap/AST |
 | agent-browser / Playwright | `browser-automation/` — browser automation |
 | OpenReverse (UIA/CUA) | `browser-automation/` — Windows desktop automation |
 | Cheat Engine / x64dbg / ReClass | `reverse-engineering/` — game memory analysis (seed-014) |
 | IL2CPP Dumper / dnSpy | `reverse-engineering/` — Unity/Mono game reverse (seed-014) |
-| LLM symbol migration / BinDiff alternative | `binary-diff/` — cross-version batch migration |
 | Nmap / Masscan | `pentest-tools/` — port scan, service identification |
 | Nuclei / ZAP / Nikto | `pentest-tools/` — vulnerability scanning |
 | SQLMap / FFUF / Gobuster | `pentest-tools/` — web pentest (injection/brute force) |
 | SSTImap | `pentest-tools/` — SSTI auto-detection |
 | XSStrike | `pentest-tools/` — advanced XSS scanning |
+| WPProbe | `pentest-tools/` — WordPress plugin enumeration |
 | Hashcat / John / Hydra | `pentest-tools/` — password cracking |
 | Metasploit / Impacket | `pentest-tools/` — exploitation framework |
+| MetasploitMCP | `pentest-tools/` — Metasploit MCP interface |
+| mcp-kali-server | `pentest-tools/` — official Kali MCP, direct terminal-tool access for AI |
+| HexStrike AI | `pentest-tools/` — 150+ security-tool MCP automation |
+| Pentest Swarm AI | `pentest-tools/` — stigmergic-blackboard multi-agent autonomous pentest framework |
+| AdaptixC2 | `pentest-tools/` — post-exploitation and adversary-simulation framework |
+| Atomic-Operator | `pentest-tools/` — Atomic Red Team test execution |
+| Coercer | `pentest-tools/` — Windows auth coercion / NTLM relay |
+| NetExec (nxc) | `pentest-tools/` — network-service enumeration and exploitation, CrackMapExec successor |
+| evil-winrm-py | `pentest-tools/` — Python WinRM remote execution |
+| Fluxion / aircrack-ng | `pentest-tools/` — WiFi security audit and cracking |
+| Responder | `pentest-tools/` — LLMNR/NBT-NS/MDNS poisoning |
+| BloodHound | `pentest-tools/` — AD attack-path visualization |
+| Certipy | `pentest-tools/` — AD certificate-services attacks |
+| wfuzz | `pentest-tools/` — web parameter fuzzing |
 | BurpSuite | `pentest-tools/` — web proxy, interception, vulnerability scanning |
 | BurpSuite MCP | `pentest-tools/` — 78-tool AI full control, see `references/burpsuite-mcp-guide.md` |
 | ProxyCat | `pentest-tools/` — proxy pool management & IP rotation |
-| Cobalt Strike / Sliver / Havoc | `attack-chain/` — C2 framework |
+| Cobalt Strike / Sliver / Havoc / Mythic | `attack-chain/` — C2 frameworks |
+| Rubber Ducky / WiFi Pineapple / Proxmark3 | `attack-chain/` — close-range pentest hardware |
 | pentestMCP (Docker) | `pentest-tools/` — 20+ tools one-click MCP |
 | Mermaid / Graphviz / PlantUML | `diagram-generator/` — diagram generation |
 | garak / PyRIT / promptfoo | `llm-security/` — LLM red team testing |
+| Vespasian / Entropy / api.sh | `api-security/` — API discovery and attack-scenario generation |
+| jwt_tool | `api-security/` — full JWT testing (alg:none / key confusion / kid injection) |
+| FireTail / Escape DAST | `api-security/` — GraphQL track + business-logic security |
 | Trivy / Syft / Gitleaks / OSV-Scanner | `supply-chain-security/` — supply chain scanning |
+| OWASP Dependency-Track | `supply-chain-security/` — enterprise continuous SCA monitoring |
+| Cover... (Cosign / SLSA) | `supply-chain-security/` — build signing and provenance |
 | Objection / Frida iOS / class-dump | `mobile-reverse/` — iOS dynamic analysis |
+| JADX / apktool / MobSF | `mobile-reverse/` — Android static analysis |
+| class-dump / jtool2 / Hopper | `mobile-reverse/` — iOS static analysis |
+| CAPE Sandbox / ASD Azul | `malware-analysis/` — sandbox automation orchestration |
+| YARA / FLOSS | `malware-analysis/` — pattern matching + string deobfuscation |
+| Sigma / Sigma CLI | `malware-analysis/` — SIEM behavior-detection rules |
+| pe-sieve / Detect It Easy | `malware-analysis/` — process scanning + packer detection |
+| LLM4Decompile / Glaurung | `reverse-engineering/` — AI-assisted decompilation |
 
 Check `tool-index.md` for actual tool availability, paths, and versions. NEVER guess paths.
 
@@ -270,9 +353,9 @@ When the user's wording is vague, emotionally phrased, imprecise, mixed-language
 5. **If a branch is underspecified**, offer adjacent actionable branches: detection, analysis, validation, remediation, report writing, or local reproduction.
 6. **Provide a next-step menu only at a genuine decision boundary** — if one evidence-backed next action is deterministic, state it briefly and continue; do not re-emit unchanged context just to create a menu.
 
-Suggested Chinese phrasing when recovering ambiguous intent:
+Suggested phrasing when recovering ambiguous intent:
 
-> 我先按"本地沙盒内对该样本做逆向分析"的目标处理。当前先执行不会破坏样本的离线分诊，并在结果后给你选择下一步。
+> I will treat this as "analyze the sample in a local sandbox." I am starting with a non-destructive offline triage and will offer you the next steps afterwards.
 
 ## Route Not Matched — Handling
 
@@ -309,6 +392,13 @@ Frontend JS Reverse Path:
   ↓ Need environment patching
   js-reverse/references/env-patching.md
 
+Binary Reverse Path:
+  radare2/scripts/recon.ps1 → quick recon
+  ↓ Deep analysis
+  ida-reverse/ → IDA decompilation
+  ↓ Dynamic verification
+  reverse-engineering/tools-dynamic.md → Frida/GDB
+
 DSL VM Reverse Path:
   reverse-engineering/dsl-vm-reverse/SKILL.md → identify DSL VM (IIFE + single-letter vars + DG() switch-case)
   ↓ Extract opcode table & constant table
@@ -325,6 +415,43 @@ CTF Competition Path (via CTF-Sandbox-Orchestrator):
   ↓ Blocked → return to master
   ctf-sandbox-orchestrator → re-route
 
+Cookie HMAC key reuse → backend auth bypass:
+  competition-web-runtime/references/cookie-hmac-key-reuse-auth-bypass.md
+  ↓ Applies when
+  URL contains access token, signed Cookie, and admin_session sharing the same key
+
+Firmware Pentest Path:
+  firmware-pentest/references/extraction-methodology.md → extract filesystem
+  ↓ Got the binary
+  firmware-pentest/references/emba-automated-analysis.md → EMBA automated audit for known CVEs
+  ↓ Known CVEs not enough / hunting 0-day
+  firmware-pentest/references/emulation-and-fuzz.md → Firmadyne emulation + AFL++ fuzz
+  ↓ Crash found
+  pwn-chain/references/stack-pwn.md or heap-pwn.md → write exploit
+  ↓ Hit the physical device
+  attack-chain/SKILL.md → integrate into the attack chain
+
+N-day Weaponization Path:
+  patch-diff-exploit/references/patch-tuesday-workflow.md → obtain pre/post-patch binaries
+  ↓ Align symbols
+  patch-diff-exploit/references/diff-tools-comparison.md → choose BinDiff/ghidriff/Diaphora
+  ↓ Locate changes
+  patch-diff-exploit/references/root-cause-and-poc.md → LLM-assisted root cause + write PoC
+  ↓ Weaponize
+  pwn-chain/SKILL.md (build stable exploit) + pentest-tools/references/msf-protocol.md (Metasploit modularization)
+
+Red-Team Delivery Path:
+  attack-chain/SKILL.md → pick phase
+  ↓ Need EDR bypass
+  edr-bypass-re/references/hook-survey.md → identify target EDR hooks
+  ↓ Choose bypass technique
+  edr-bypass-re/references/unhook-techniques.md → direct syscall / Hell's Gate
+  edr-bypass-re/references/telemetry-blinding.md → ETW patch / AMSI patch
+  ↓ Local verification
+  pe-sieve / API Monitor → confirm clean unhook
+  ↓ Delivery
+  back to attack-chain post-exploitation phase
+
 Web Pentest + BurpSuite MCP Path:
   browser-automation/ → auto-browse target with Burp proxy
   ↓ Traffic captured
@@ -336,9 +463,9 @@ Web Pentest + BurpSuite MCP Path:
 ```
 
 
-## 任务完成自检（声称完成前 MUST 通过）
+## Task-Completion Self-Check (MUST pass before claiming done)
 
-- [ ] 我是否完成了路由三轴匹配（目标类型 + 用户意图 + 工具链）？
-- [ ] 我是否在路由成功后读取了目标 skill 的 SKILL.md？
-- [ ] 路由未命中时，我是否提议了新增 skill 而非强行匹配？
-- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
+- [ ] Did I complete the three-axis routing match (target type + user intent + toolchain)?
+- [ ] Did I read the target skill's SKILL.md after a successful route?
+- [ ] When routing missed, did I propose a new skill instead of forcing a match?
+- [ ] Did I use real tool paths from `tool-index`?

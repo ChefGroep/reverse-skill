@@ -15,7 +15,7 @@ Cryptanalyse-workflow: van ruw materiaal naar onthulde plaintext, reproduceerbaa
 en met verificatie. Materiaal is lokaal; online orakels (factordb) alleen lezend
 en zonder gevoelige payloads.
 
-## ACTION REQUIRED（读完后立刻执行）
+## ACTION REQUIRED (execute immediately after reading)
 
 1. `NOW`: classificeer het materiaal (Fase 1) vóór toolkeuze; alles wat al een
    bekend protocol is (TLS/JWT/SAML) routeert eerst naar de bijbehorende skill.
